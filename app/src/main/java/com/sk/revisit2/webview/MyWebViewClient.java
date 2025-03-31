@@ -6,6 +6,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
@@ -21,9 +23,14 @@ public class MyWebViewClient extends WebViewClient {
 
 	final MyUtils myUtils;
 	final String TAG = MyWebViewClient.class.getSimpleName();
+	ProgressBar progressBar;
 
 	public MyWebViewClient(@NonNull MyUtils myUtils) {
 		this.myUtils = myUtils;
+	}
+
+	public void setProgressBar(ProgressBar progressBar) {
+		this.progressBar = progressBar;
 	}
 
 	@Override
@@ -95,17 +102,22 @@ public class MyWebViewClient extends WebViewClient {
 		log1("shouldOverrideUrlLoading",arg1.getUrl().toString());
 		return super.shouldOverrideUrlLoading(arg0, arg1);
 	}
-
 	@Override
-	public void onPageFinished(WebView arg0, String arg1) {
-		super.onPageFinished(arg0, arg1);
-		log1("onPageFinished",arg1);
+	public void onPageFinished(WebView view, String url) {
+		super.onPageFinished(view, url);
+		if (progressBar != null) {
+			progressBar.setProgress(100);
+			progressBar.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
-	public void onPageStarted(WebView arg0, String arg1, Bitmap arg2) {
-		super.onPageStarted(arg0, arg1, arg2);
-		log1("onPageStarted",arg1);
+	public void onPageStarted(WebView view, String url, Bitmap favicon) {
+		super.onPageStarted(view, url, favicon);
+		if (progressBar != null) {
+			progressBar.setProgress(0);
+			progressBar.setVisibility(View.VISIBLE);
+		}
 	}
 
 	@Override

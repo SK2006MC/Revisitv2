@@ -16,9 +16,11 @@ public class MyWebView extends WebView {
 	final Context context;
 	AttributeSet attributeSet;
 	int defStyleAttr;
-	MyWebViewClient webViewClient;
-	MyWebChromeClient webChromeClient;
-	MyUtils myUtils;
+
+	public MyWebViewClient webViewClient;
+	public MyWebChromeClient webChromeClient;
+	public MyUtils myUtils;
+	
 	private WebPreferenceManager preferenceManager;
 
 	public MyWebView(Context context) {
