@@ -7,10 +7,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
-
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.sk.revisit2.log.Log;
 import com.sk.revisit2.MyUtils;
 
@@ -23,13 +22,13 @@ public class MyWebViewClient extends WebViewClient {
 
 	final MyUtils myUtils;
 	final String TAG = MyWebViewClient.class.getSimpleName();
-	ProgressBar progressBar;
+	LinearProgressIndicator progressBar;
 
 	public MyWebViewClient(@NonNull MyUtils myUtils) {
 		this.myUtils = myUtils;
 	}
 
-	public void setProgressBar(ProgressBar progressBar) {
+	public void setProgressBar(LinearProgressIndicator progressBar) {
 		this.progressBar = progressBar;
 	}
 

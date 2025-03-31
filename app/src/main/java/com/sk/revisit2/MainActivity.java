@@ -72,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
 		webViewMain = binding.mainWebView;
 		webViewMain.setMyUtils(myUtils);
-		webViewMain.webChromeClient.setWebProgressBar(binding.webProgressBar);
-		webViewMain.webViewClient.setProgressBar(binding.webProgressBar);
+		webViewMain.setProgressBar(binding.webProgressBar);
 
 		navBinding.urlEditText.setOnEditorActionListener((v, actionId, event) -> {
 			try {

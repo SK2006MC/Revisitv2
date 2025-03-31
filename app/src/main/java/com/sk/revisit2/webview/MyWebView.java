@@ -7,6 +7,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import com.sk.revisit2.MyUtils;
 import com.sk.revisit2.preferences.WebPreferenceManager;
@@ -22,6 +23,7 @@ public class MyWebView extends WebView {
 	public MyUtils myUtils;
 	
 	private WebPreferenceManager preferenceManager;
+	private LinearProgressIndicator progressBar;
 
 	public MyWebView(Context context) {
 		super(context);
@@ -51,6 +53,12 @@ public class MyWebView extends WebView {
 
 		setWebChromeClient(webChromeClient);
 		setWebViewClient(webViewClient);
+	}
+
+	public void setProgressBar(LinearProgressIndicator progressBar) {
+		this.progressBar = progressBar;
+		webChromeClient.setProgressBar(progressBar);
+		webViewClient.setProgressBar(progressBar);
 	}
 
 	@SuppressLint("SetJavaScriptEnabled")

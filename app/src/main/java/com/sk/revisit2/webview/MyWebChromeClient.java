@@ -1,14 +1,12 @@
 package com.sk.revisit2.webview;
 
-import android.widget.ProgressBar;
-import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.graphics.Bitmap;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 public class MyWebChromeClient extends WebChromeClient {
-	ProgressBar progressBar;
+	LinearProgressIndicator progressBar;
 
 	@Override
 	public void onProgressChanged(WebView arg0, int arg1) {
@@ -18,7 +16,7 @@ public class MyWebChromeClient extends WebChromeClient {
 		}
 	}
 
-	public void setWebProgressBar(ProgressBar progressBar){
+	public void setProgressBar(LinearProgressIndicator progressBar){
 		this.progressBar = progressBar;
 	}
 
