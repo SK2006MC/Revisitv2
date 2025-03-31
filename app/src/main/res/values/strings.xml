@@ -3,4 +3,5 @@
 	<string name="enter_a_url">Enter a url</string>
 	<string name="use_internet">Use Internet?</string>
 	<string name="keep_uptodate">Keep UptoDate?</string>
+	<string name="refresh">Refresh</string>
 </resources>

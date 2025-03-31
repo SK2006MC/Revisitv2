@@ -1,6 +1,8 @@
 package com.sk.revisit2;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -13,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.sk.revisit2.log.Log;
 import com.sk.revisit2.webview.MyWebView;
+import com.sk.revisit2.activities.PreferenceActivity;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -115,5 +118,15 @@ public class MainActivity extends AppCompatActivity {
 
 	void alert(String msg) {
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.nav_settings) {
+			Intent intent = new Intent(this, PreferenceActivity.class);
+			startActivity(intent);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

@@ -11,37 +11,13 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" />
 
-	<LinearLayout
-		android:id="@+id/llm"
-		android:layout_width="240dp"
+	<com.google.android.material.navigation.NavigationView
+		android:id="@+id/navigationView"
+		android:layout_width="200dp"
 		android:layout_height="match_parent"
 		android:layout_gravity="start"
-		android:background="#EEEEEE"
-		android:orientation="vertical"
-		android:padding="5dp">
-
-		<EditText
-			android:id="@+id/urlEditText"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:autofillHints="none"
-			android:hint="@string/enter_a_url"
-			android:imeOptions="actionDone"
-			android:inputType="textUri"
-			android:singleLine="true" />
-
-		<androidx.appcompat.widget.SwitchCompat
-			android:id="@+id/useInternet"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/use_internet" />
-
-		<androidx.appcompat.widget.SwitchCompat
-			android:id="@+id/shouldUpdate"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@string/keep_uptodate" />
-
-	</LinearLayout>
+		menu="@menu/main_nav_menu"
+		header="@layout/main_nav"
+		android:fitsSystemWindows="true" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

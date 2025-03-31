@@ -1,1 +1,1 @@
-./gradlew -g E:/gradle --build-cache --offline --configuration-cache $@
+./gradlew -g E:/gradle --build-cache --configuration-cache $@
