@@ -62,4 +62,16 @@
         <item>left</item>
         <item>right</item>
     </string-array>
+
+    <string-array name="mixed_content_modes">
+        <item>Always Allow</item>
+        <item>Never Allow</item>
+        <item>Compatibility Mode</item>
+    </string-array>
+
+    <string-array name="mixed_content_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources> 

@@ -2,28 +2,56 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Web Settings">
+    <PreferenceCategory android:title="WebView Settings">
+        <SwitchPreferenceCompat
+            android:key="javascript_enabled"
+            android:title="JavaScript"
+            android:summary="Enable JavaScript execution"
+            android:defaultValue="true"/>
 
-		<SwitchPreferenceCompat
-            android:key="auto_save"
-            android:title="Auto Save"
-            android:summary="Automatically save changes"
+        <SwitchPreferenceCompat
+            android:key="dom_storage_enabled"
+            android:title="DOM Storage"
+            android:summary="Enable DOM storage API"
+            android:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            android:key="database_enabled"
+            android:title="Database"
+            android:summary="Enable database storage API"
+            android:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            android:key="support_zoom"
+            android:title="Zoom Support"
+            android:summary="Enable zooming in web pages"
+            android:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            android:key="safe_browsing"
+            android:title="Safe Browsing"
+            android:summary="Enable safe browsing mode"
             android:defaultValue="false"/>
-		
-		<EditTextPreference
-            android:key="root_path"
-            android:title="Root Directory"
-            android:summary="Directory where files will be saved"
-            android:inputType="text"
-            android:defaultValue="FastCopyPaste"/>
 
-		<ListPreference
-            android:key="file_extension"
-            android:title="Default File Extension"
-            android:summary="Default extension for new files"
-            android:entries="@array/file_extensions"
-            android:entryValues="@array/file_extensions"
-            android:defaultValue=".txt"/>
-			
+        <SwitchPreferenceCompat
+            android:key="multiple_windows"
+            android:title="Multiple Windows"
+            android:summary="Support multiple windows"
+            android:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            android:key="media_playback_gesture"
+            android:title="Media Playback Gesture"
+            android:summary="Require user gesture for media playback"
+            android:defaultValue="true"/>
+
+        <ListPreference
+            android:key="mixed_content_mode"
+            android:title="Mixed Content Mode"
+            android:summary="How to handle mixed content"
+            android:entries="@array/mixed_content_modes"
+            android:entryValues="@array/mixed_content_mode_values"
+            android:defaultValue="0"/>
+            
     </PreferenceCategory>
 </PreferenceScreen>

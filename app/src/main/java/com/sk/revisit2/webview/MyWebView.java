@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 
 import com.sk.revisit2.MyUtils;
+import com.sk.revisit2.preferences.WebPreferenceManager;
 
 public class MyWebView extends WebView {
 
@@ -18,6 +19,7 @@ public class MyWebView extends WebView {
 	MyWebViewClient webViewClient;
 	MyWebChromeClient webChromeClient;
 	MyUtils myUtils;
+	private WebPreferenceManager preferenceManager;
 
 	public MyWebView(Context context) {
 		super(context);
@@ -51,29 +53,35 @@ public class MyWebView extends WebView {
 
 	@SuppressLint("SetJavaScriptEnabled")
 	void init(Context context) {
+		preferenceManager = new WebPreferenceManager(context);
 		WebSettings webSettings = getSettings();
+		
+		// Apply basic settings that aren't configurable
 		webSettings.setAllowContentAccess(true);
 		webSettings.setAllowFileAccess(true);
 		webSettings.setAllowFileAccessFromFileURLs(true);
 		webSettings.setAllowUniversalAccessFromFileURLs(true);
-		//webSettings.setAppCacheEnabled(true);
-		webSettings.setDatabaseEnabled(true);
-		//webSettings.setBuiltInZoomControls(false);
-		//webSettings.setDisplayZoomControls(false);
-		webSettings.setDomStorageEnabled(true);
-		webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
-		webSettings.setJavaScriptEnabled(true);
-		//webSettings.setLoadWithOverviewMode(false);
-		//webSettings.setLoadsImagesAutomatically(false);
-		webSettings.setMediaPlaybackRequiresUserGesture(true);
-		webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-		//webSettings.setNeedInitialFocus(false);
 		webSettings.setOffscreenPreRaster(true);
-		//webSettings.setRenderPriority();
-		webSettings.setSafeBrowsingEnabled(false);
-		webSettings.setSupportMultipleWindows(true);
-		webSettings.setSupportZoom(true);
 		webSettings.setUseWideViewPort(true);
-		//webSettings.setUserAgentString();
+
+		// Apply configurable settings from preferences
+		preferenceManager.applyToWebSettings(webSettings);
+
+		// Listen for preference changes
+		preferenceManager.registerOnSharedPreferenceChangeListener((prefs, key) -> {
+			// Reapply settings when preferences change
+			preferenceManager.applyToWebSettings(webSettings);
+		});
+	}
+
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		// Clean up preference listener
+		if (preferenceManager != null) {
+			preferenceManager.unregisterOnSharedPreferenceChangeListener(
+				(prefs, key) -> preferenceManager.applyToWebSettings(getSettings())
+			);
+		}
 	}
 }
