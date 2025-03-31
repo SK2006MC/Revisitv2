@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Web Settings">
+
+		<SwitchPreferenceCompat
+            android:key="auto_save"
+            android:title="Auto Save"
+            android:summary="Automatically save changes"
+            android:defaultValue="false"/>
+		
+		<EditTextPreference
+            android:key="root_path"
+            android:title="Root Directory"
+            android:summary="Directory where files will be saved"
+            android:inputType="text"
+            android:defaultValue="FastCopyPaste"/>
+
+		<ListPreference
+            android:key="file_extension"
+            android:title="Default File Extension"
+            android:summary="Default extension for new files"
+            android:entries="@array/file_extensions"
+            android:entryValues="@array/file_extensions"
+            android:defaultValue=".txt"/>
+			
+    </PreferenceCategory>
+</PreferenceScreen>
