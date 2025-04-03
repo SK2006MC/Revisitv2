@@ -53,6 +53,7 @@ public class MyUtils {
 	private final Context context;
 	final int WRITE_BUFFER = 8 * 1024;
 	private final Downloader downloader;
+	private final FileUtils fileUtils;
 
 	public MyUtils(Context context, String rootPath) {
 		// Ensure rootPath ends with a separator
@@ -68,6 +69,7 @@ public class MyUtils {
 		logger = new LoggerHelper(rootPath + "log.txt", executorService);
 		reqLogger = new LoggerHelper(rootPath + "req.txt", executorService);
 		this.downloader = new Downloader(executorService, this, WRITE_BUFFER);
+		this.fileUtils = new FileUtils(logger);
 		Log("MyUtils initialized. Root path: " + rootPath); // Use instance logger
 	}
 
@@ -158,13 +160,7 @@ public class MyUtils {
 
 	// Helper to ensure a directory exists
 	public void prepareDirectory(File dir) {
-		if (!dir.exists()) {
-			if (!dir.mkdirs()) {
-				Log.e(TAG, "Failed to create directory: " + dir.getAbsolutePath()); // Use static Log here as logger might not be ready
-				return;
-			}
-		}
-		dir.isDirectory();
+		fileUtils.prepareDirectory(dir);
 	}
 
 	public void logUrl(String url) {
@@ -220,42 +216,7 @@ public class MyUtils {
 	}
 
 	public File prepareFile(String path) {
-		File file = new File(path);
-		try {
-			// Check if it exists and is a file (not a directory)
-			if (file.exists()) {
-				if (file.isFile()) {
-					return file;
-				} else {
-					LogError("Path exists but is a directory: " + path, null);
-					return null; // Path exists but is not a file
-				}
-			}
-
-
-			File parent = file.getParentFile(); // Use getParentFile()
-			if (parent != null && !parent.exists()) {
-				if (!parent.mkdirs()) {
-					LogError("Failed to create parent directories for: " + parent.getAbsolutePath(), null);
-					return null;
-				}
-			}
-
-			if (file.createNewFile()) {
-				Log(TAG, "Created file: " + file.getAbsolutePath());
-				return file;
-			} else {
-				// Check again if it exists now (maybe race condition?)
-				if (file.exists() && file.isFile()) {
-					return file;
-				}
-				LogError("Failed to create file: " + file.getAbsolutePath(), null);
-				return null;
-			}
-		} catch (Exception e) {
-			LogError("Error preparing file: " + path, e);
-			return null;
-		}
+		return fileUtils.prepareFile(path);
 	}
 
 	public String buildLocalPath(Uri uri) {
@@ -333,13 +294,7 @@ public class MyUtils {
 
 	// Helper to write a string to a file
 	public void writeStringToFile(String filePath, String content) {
-		File file = new File(filePath);
-		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-			writer.write(content);
-			// Log(TAG,"Wrote metadata file: " + filePath); // Optional: can be verbose
-		} catch (IOException e) {
-			LogError("Failed to write metadata file: " + filePath, e);
-		}
+		fileUtils.writeStringToFile(filePath, content);
 	}
 
 	public String getMimeTypeFromMeta(String baseFilePath) {
@@ -362,26 +317,7 @@ public class MyUtils {
 
 	// Helper to read the first line (or whole content) from a small file
 	public String readStringFromFile(String filePath) {
-		File file = new File(filePath);
-		if (!file.exists() || !file.isFile() || file.length() == 0) {
-			return null;
-		}
-		// For small metadata files, reading the whole content might be simpler
-		StringBuilder content = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-			String line;
-			// For small metadata files, reading the whole content might be simpler
-			// If expecting only the first line: return reader.readLine();
-			// If the file might be multi-line JSON etc.:
-			while ((line = reader.readLine()) != null) {
-				content.append(line); // Append lines if necessary (e.g., for multi-line JSON, though headers are usually single line)
-			}
-		} catch (IOException e) {
-			LogError("Error reading metadata file: " + filePath, e);
-			return null;
-		}
-		String result = content.toString().trim();
-		return result.isEmpty() ? null : result;
+		return fileUtils.readStringFromFile(filePath);
 	}
 
 	// --- Header Conversion ---
@@ -392,38 +328,12 @@ public class MyUtils {
 	 * Uses the provided or guessed encoding.
 	 */
 	public String getString(File file, String encoding) {
-		if (file == null || !file.exists() || !file.isFile()) {
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-		String effectiveEncoding = encoding;
-		if (effectiveEncoding == null || effectiveEncoding.isEmpty()) {
-			effectiveEncoding = guessEncodingFromFile(file); // Guess if not provided
-		}
-		if (effectiveEncoding == null) {
-			effectiveEncoding = StandardCharsets.UTF_8.name(); // Default fallback
-			Log(TAG, "Using default encoding UTF-8 for file: " + file.getPath());
-		}
-
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), effectiveEncoding))) {
-			char[] buffer = new char[WRITE_BUFFER]; // Use char buffer for reader
-			int charsRead;
-			while ((charsRead = reader.read(buffer)) != -1) {
-				builder.append(buffer, 0, charsRead);
-			}
-			return builder.toString();
-		} catch (IOException e) {
-			LogError("Error reading string from file: " + file.getPath(), e);
-			return null; // Indicate failure
-		} catch (Exception e) { // Catch potential unsupported encoding etc.
-			LogError("Error processing file: " + file.getPath(), e);
-			return null;
-		}
+		return fileUtils.getString(file, encoding);
 	}
 
 	// Overload getString to use default encoding guessing
 	public String getString(File file) {
-		return getString(file, null);
+		return fileUtils.getString(file);
 	}
 
 	public String guessEncodingFromFile(File file) {
@@ -475,16 +385,7 @@ public class MyUtils {
 
 	// Renamed original deleteFile for clarity
 	void deleteSingleFile(File file) {
-		if (file == null) {
-			return;
-		}
-		if (file.exists()) {
-			if (file.delete()) {
-				// Log(TAG,"Deleted file: " + file.getAbsolutePath()); // Optional success log
-			} else {
-				LogError("Failed to delete file: " + file.getAbsolutePath(), null);
-			}
-		}
+		fileUtils.deleteFile(file);
 	}
 
 	// Make the public deleteFile call the helper for consistency
@@ -588,7 +489,5 @@ public class MyUtils {
 		reqLogger.close();
 		executorService.shutdown();
 		Log(TAG, "Executor service shut down.");
-		// Consider using shutdownNow() or awaitTermination() if needed,
-		// but simple shutdown is usually fine for background tasks.
 	}
 }
