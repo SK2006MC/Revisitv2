@@ -53,7 +53,9 @@ public class MyUtils {
 	private final Context context;
 	final int WRITE_BUFFER = 8 * 1024;
 	private final Downloader downloader;
-	private final FileUtils fileUtils;
+	private final FileManager fileManager;
+	private final MetadataManager metadataManager;
+	private final EncodingUtils encodingUtils;
 
 	public MyUtils(Context context, String rootPath) {
 		// Ensure rootPath ends with a separator
@@ -63,14 +65,24 @@ public class MyUtils {
 		this.context = context;
 		this.rootPath = rootPath;
 		executorService = Executors.newFixedThreadPool(MAX_THREADS);
-		// Ensure log directories exist
-		prepareDirectory(new File(rootPath));
-		urlLogger = new LoggerHelper(rootPath + "urls.txt", executorService);
+		
+		// Initialize loggers first
 		logger = new LoggerHelper(rootPath + "log.txt", executorService);
+		urlLogger = new LoggerHelper(rootPath + "urls.txt", executorService);
 		reqLogger = new LoggerHelper(rootPath + "req.txt", executorService);
-		this.downloader = new Downloader(executorService, this, WRITE_BUFFER);
-		this.fileUtils = new FileUtils(logger);
-		Log("MyUtils initialized. Root path: " + rootPath); // Use instance logger
+		
+		// Initialize utility classes
+		fileManager = new FileManager(logger, WRITE_BUFFER);
+		encodingUtils = new EncodingUtils(logger);
+		metadataManager = new MetadataManager(logger, fileManager);
+		
+		// Initialize downloader
+		downloader = new Downloader(executorService, this, WRITE_BUFFER);
+		
+		// Ensure root directory exists
+		fileManager.prepareDirectory(new File(rootPath));
+		
+		Log(TAG, "MyUtils initialized. Root path: " + rootPath);
 	}
 
 	/**
@@ -158,11 +170,6 @@ public class MyUtils {
 		return headers;
 	}
 
-	// Helper to ensure a directory exists
-	public void prepareDirectory(File dir) {
-		fileUtils.prepareDirectory(dir);
-	}
-
 	public void logUrl(String url) {
 		urlLogger.log(url);
 	}
@@ -189,58 +196,39 @@ public class MyUtils {
 	}
 
 	public String encodeToB64(@NonNull String url) {
-		return Base64.encodeToString(url.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+		return encodingUtils.encodeToB64(url);
 	}
 
 	public String hash(String url) {
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hashBytes = digest.digest(url.getBytes(StandardCharsets.UTF_8));
-
-			StringBuilder hexString = new StringBuilder(2 * hashBytes.length);
-			for (byte hashByte : hashBytes) {
-				String hex = Integer.toHexString(0xff & hashByte);
-				if (hex.length() == 1) {
-					hexString.append('0');
-				}
-				hexString.append(hex);
-			}
-			return hexString.toString();
-
-		} catch (NoSuchAlgorithmException e) {
-			LogError("SHA-256 algorithm not available", e); // Use instance logger
-			// Fallback or rethrow? Returning null might hide issues. Maybe use Base64 as fallback?
-			// For now, return Base64 encoding as a less ideal alternative path name
-			return encodeToB64(url);
-		}
+		return encodingUtils.hash(url);
 	}
 
 	public File prepareFile(String path) {
-		return fileUtils.prepareFile(path);
+		return fileManager.prepareFile(path);
 	}
 
 	public String buildLocalPath(Uri uri) {
 		return buildLocalPath2(uri); // Use hashing by default
 	}
 
-	String buildBasePath(Uri uri) {
+	private String buildBasePath(Uri uri) {
 		String authority = uri.getAuthority();
 		if (authority == null || authority.isEmpty()) {
 			authority = "no_authority"; // Handle cases like file:/// URIs
 		}
 		// Ensure the base directory exists when creating the path string
 		String basePath = rootPath + authority + File.separator;
-		prepareDirectory(new File(basePath)); // Ensure base dir exists
+		fileManager.prepareDirectory(new File(basePath)); // Ensure base dir exists
 		return basePath;
 	}
 
 	// --- Metadata Saving Methods ---
 
-	String buildLocalPath1(Uri uri) {
+	private String buildLocalPath1(Uri uri) {
 		return buildBasePath(uri) + encodeToB64(uri.toString());
 	}
 
-	String buildLocalPath2(Uri uri) {
+	private String buildLocalPath2(Uri uri) {
 		String hashed = hash(uri.toString());
 		if (hashed == null) {
 			// Fallback if hashing failed
@@ -259,7 +247,7 @@ public class MyUtils {
 			// Extract only the MIME type part
 			String actualMime = mimeType.split(";")[0].trim();
 			if (!actualMime.isEmpty()) {
-				writeStringToFile(baseFilePath + META_MIME_SUFFIX, actualMime);
+				fileManager.writeStringToFile(baseFilePath + META_MIME_SUFFIX, actualMime);
 			} else {
 				Log(TAG, "Extracted empty mime type from: " + mimeType);
 			}
@@ -269,7 +257,7 @@ public class MyUtils {
 			String guessedMime = guessMimeFromUrl(baseFilePath); // Use original URL if possible, fallback to filepath
 			if (guessedMime != null) {
 				Log(TAG, "Guessed MIME type: " + guessedMime + " for " + baseFilePath);
-				writeStringToFile(baseFilePath + META_MIME_SUFFIX, guessedMime);
+				fileManager.writeStringToFile(baseFilePath + META_MIME_SUFFIX, guessedMime);
 			}
 		}
 	}
@@ -278,7 +266,7 @@ public class MyUtils {
 
 	public void saveEncoding(String baseFilePath, String encoding) {
 		if (encoding != null && !encoding.isEmpty()) {
-			writeStringToFile(baseFilePath + META_ENCODING_SUFFIX, encoding);
+			fileManager.writeStringToFile(baseFilePath + META_ENCODING_SUFFIX, encoding);
 		}
 		// If no encoding header, we might rely on guessing later or default to UTF-8
 	}
@@ -287,37 +275,32 @@ public class MyUtils {
 		if (headersMap != null && !headersMap.isEmpty()) {
 			JSONObject jsonHeaders = responseHeadersToJson(headersMap);
 			if (jsonHeaders != null) {
-				writeStringToFile(baseFilePath + META_HEADERS_SUFFIX, jsonHeaders.toString());
+				fileManager.writeStringToFile(baseFilePath + META_HEADERS_SUFFIX, jsonHeaders.toString());
 			}
 		}
 	}
 
 	// Helper to write a string to a file
 	public void writeStringToFile(String filePath, String content) {
-		fileUtils.writeStringToFile(filePath, content);
+		fileManager.writeStringToFile(filePath, content);
 	}
 
 	public String getMimeTypeFromMeta(String baseFilePath) {
-		return readStringFromFile(baseFilePath + META_MIME_SUFFIX);
+		return metadataManager.getMimeTypeFromMeta(baseFilePath);
 	}
 
 	public String getEncodingFromMeta(String baseFilePath) {
-		return readStringFromFile(baseFilePath + META_ENCODING_SUFFIX);
+		return metadataManager.getEncodingFromMeta(baseFilePath);
 	}
 
 	// Corrected getHeaders
 	public Map<String, String> getHeaders(String baseFilePath) {
-		String filePath = baseFilePath + META_HEADERS_SUFFIX;
-		String jsonString = readStringFromFile(filePath);
-		if (jsonString != null && !jsonString.isEmpty()) {
-			return jsonToHeaders(jsonString); // Use the existing static method
-		}
-		return null; // Return null or empty map if no headers found
+		return metadataManager.getHeaders(baseFilePath);
 	}
 
 	// Helper to read the first line (or whole content) from a small file
 	public String readStringFromFile(String filePath) {
-		return fileUtils.readStringFromFile(filePath);
+		return fileManager.readStringFromFile(filePath);
 	}
 
 	// --- Header Conversion ---
@@ -328,12 +311,12 @@ public class MyUtils {
 	 * Uses the provided or guessed encoding.
 	 */
 	public String getString(File file, String encoding) {
-		return fileUtils.getString(file, encoding);
+		return fileManager.getString(file, encoding);
 	}
 
 	// Overload getString to use default encoding guessing
 	public String getString(File file) {
-		return fileUtils.getString(file);
+		return fileManager.getString(file);
 	}
 
 	public String guessEncodingFromFile(File file) {
@@ -375,17 +358,12 @@ public class MyUtils {
 		if (contentFile == null) {
 			return;
 		}
-		String basePath = contentFile.getAbsolutePath();
-		deleteFile(contentFile); // Delete the main file
-		deleteFile(new File(basePath + META_MIME_SUFFIX));
-		deleteFile(new File(basePath + META_HEADERS_SUFFIX));
-		deleteFile(new File(basePath + META_ENCODING_SUFFIX));
-		Log(TAG, "Deleted file and metadata for: " + basePath);
+		metadataManager.deleteFileAndMetadata(contentFile);
 	}
 
 	// Renamed original deleteFile for clarity
 	void deleteSingleFile(File file) {
-		fileUtils.deleteFile(file);
+		fileManager.deleteFile(file);
 	}
 
 	// Make the public deleteFile call the helper for consistency
