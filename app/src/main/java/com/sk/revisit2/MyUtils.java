@@ -52,6 +52,7 @@ public class MyUtils {
 	private final String rootPath;
 	private final Context context;
 	final int WRITE_BUFFER = 8 * 1024;
+	private final Downloader downloader;
 
 	public MyUtils(Context context, String rootPath) {
 		// Ensure rootPath ends with a separator
@@ -66,6 +67,7 @@ public class MyUtils {
 		urlLogger = new LoggerHelper(rootPath + "urls.txt", executorService);
 		logger = new LoggerHelper(rootPath + "log.txt", executorService);
 		reqLogger = new LoggerHelper(rootPath + "req.txt", executorService);
+		this.downloader = new Downloader(executorService, this, WRITE_BUFFER);
 		Log("MyUtils initialized. Root path: " + rootPath); // Use instance logger
 	}
 
@@ -155,7 +157,7 @@ public class MyUtils {
 	}
 
 	// Helper to ensure a directory exists
-	private void prepareDirectory(File dir) {
+	public void prepareDirectory(File dir) {
 		if (!dir.exists()) {
 			if (!dir.mkdirs()) {
 				Log.e(TAG, "Failed to create directory: " + dir.getAbsolutePath()); // Use static Log here as logger might not be ready
@@ -287,95 +289,10 @@ public class MyUtils {
 	}
 
 	public void download(WebResourceRequest request) {
-		executorService.execute(() -> {
-			Uri uri = request.getUrl();
-			String url = uri.toString();
-			String filePath = buildLocalPath(uri);
-			if (filePath == null) {
-				LogError("Could not build local path for: " + url, null);
-				return;
-			}
-			File file = prepareFile(filePath);
-
-			if (file == null) {
-				LogError("Failed to prepare file for download: " + url + " at " + filePath, null);
-				return;
-			}
-
-			// Check if file already exists and if update is needed (optional logic)
-			if (file.exists() && file.length() > 0 && !shouldUpdate) {
-				Log(TAG, "Skipping download, file exists and shouldUpdate is false: " + url);
-				return;
-			}
-
-			HttpURLConnection connection = null;
-			InputStream inputStream = null;
-			FileOutputStream outputStream = null;
-
-			try {
-				URL urlObj = new URL(url);
-				connection = (HttpURLConnection) urlObj.openConnection();
-				connection.setRequestMethod("GET");
-				connection.setConnectTimeout(15000); // 15 seconds
-				connection.setReadTimeout(15000); // 15 seconds
-				// Set request headers from the original request
-				if (request.getRequestHeaders() != null) {
-					request.getRequestHeaders().forEach(connection::setRequestProperty);
-				}
-				connection.connect();
-
-				int responseCode = connection.getResponseCode();
-				// Handle redirects (3xx) if necessary, for simplicity we only handle 200 OK
-				if (responseCode == HttpURLConnection.HTTP_OK) {
-					inputStream = connection.getInputStream();
-					outputStream = new FileOutputStream(file); // Overwrites if exists
-
-					byte[] buffer = new byte[WRITE_BUFFER];
-					int bytesRead;
-					while ((bytesRead = inputStream.read(buffer)) != -1) {
-						outputStream.write(buffer, 0, bytesRead);
-					}
-					outputStream.flush(); // Ensure all data is written
-					Log(TAG, "Downloaded: " + url + " to " + file.getAbsolutePath());
-
-					// --- Save Metadata ---
-					String mimeType = connection.getContentType();
-					String encoding = connection.getContentEncoding(); // May be null
-					Map<String, List<String>> responseHeaders = connection.getHeaderFields();
-
-					saveMimeType(filePath, mimeType);
-					saveEncoding(filePath, encoding); // Save encoding if provided
-					saveHeaders(filePath, responseHeaders);
-					// --- Metadata Saved ---
-
-				} else {
-					LogError("Failed to download " + url + ", response code: " + responseCode + " " + connection.getResponseMessage(), null);
-					deleteFileAndMetadata(file); // Clean up failed download
-				}
-
-			} catch (Exception e) {
-				LogError("Error downloading " + url, e);
-				deleteFileAndMetadata(file); // Clean up partially downloaded file or metadata
-			} finally {
-				// Close resources safely
-				if (outputStream != null) {
-					try {
-						outputStream.close();
-					} catch (IOException e) { /* ignore */ }
-				}
-				if (inputStream != null) {
-					try {
-						inputStream.close();
-					} catch (IOException e) { /* ignore */ }
-				}
-				if (connection != null) {
-					connection.disconnect();
-				}
-			}
-		});
+		downloader.download(request);
 	}
 
-	private void saveMimeType(String baseFilePath, String mimeType) {
+	public void saveMimeType(String baseFilePath, String mimeType) {
 		if (mimeType != null && !mimeType.isEmpty()) {
 			// Often includes charset, e.g., "text/html; charset=utf-8"
 			// Extract only the MIME type part
@@ -398,14 +315,14 @@ public class MyUtils {
 
 	// --- Metadata Reading Methods ---
 
-	private void saveEncoding(String baseFilePath, String encoding) {
+	public void saveEncoding(String baseFilePath, String encoding) {
 		if (encoding != null && !encoding.isEmpty()) {
 			writeStringToFile(baseFilePath + META_ENCODING_SUFFIX, encoding);
 		}
 		// If no encoding header, we might rely on guessing later or default to UTF-8
 	}
 
-	private void saveHeaders(String baseFilePath, Map<String, List<String>> headersMap) {
+	public void saveHeaders(String baseFilePath, Map<String, List<String>> headersMap) {
 		if (headersMap != null && !headersMap.isEmpty()) {
 			JSONObject jsonHeaders = responseHeadersToJson(headersMap);
 			if (jsonHeaders != null) {
@@ -415,7 +332,7 @@ public class MyUtils {
 	}
 
 	// Helper to write a string to a file
-	private void writeStringToFile(String filePath, String content) {
+	public void writeStringToFile(String filePath, String content) {
 		File file = new File(filePath);
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
 			writer.write(content);
@@ -444,7 +361,7 @@ public class MyUtils {
 	}
 
 	// Helper to read the first line (or whole content) from a small file
-	private String readStringFromFile(String filePath) {
+	public String readStringFromFile(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists() || !file.isFile() || file.length() == 0) {
 			return null;
