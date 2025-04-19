@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/llm"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#EEEEEE"
-    android:orientation="vertical"
-    android:padding="5dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/llm"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#EEEEEE"
+	android:orientation="vertical"
+	android:padding="5dp">
 
-    <EditText
-        android:id="@+id/urlEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints="none"
-        android:hint="@string/enter_a_url"
-        android:imeOptions="actionDone"
-        android:inputType="textUri"
-        android:singleLine="true" />
+	<EditText
+		android:id="@+id/urlEditText"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:autofillHints="none"
+		android:hint="@string/enter_a_url"
+		android:imeOptions="actionDone"
+		android:inputType="textUri"
+		android:singleLine="true" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/useInternet"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/use_internet" />
+	<androidx.appcompat.widget.SwitchCompat
+		android:id="@+id/useInternet"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/use_internet" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/shouldUpdate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/keep_uptodate" />
+	<androidx.appcompat.widget.SwitchCompat
+		android:id="@+id/shouldUpdate"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/keep_uptodate" />
 
-    <Button
-        android:id="@+id/refreshButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/refresh"
-        android:layout_marginTop="8dp" />
+	<Button
+		android:id="@+id/refreshButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="8dp"
+		android:text="@string/refresh" />
 
 </LinearLayout>

@@ -1,47 +1,16 @@
 package com.sk.revisit2.utils;
 
-import android.util.Base64;
 import android.webkit.MimeTypeMap;
-
-import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class Utils {
-	public static String encodeToB64(@NonNull String url) {
-		return Base64.encodeToString(
-				url.getBytes(StandardCharsets.UTF_8),
-				Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP
-		);
-	}
-
-	public static String hash(String url) {
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			byte[] hashBytes = digest.digest(url.getBytes(StandardCharsets.UTF_8));
-
-			StringBuilder hexString = new StringBuilder();
-			for (byte b : hashBytes) {
-				String hex = Integer.toHexString(0xff & b);
-				if (hex.length() == 1) {
-					hexString.append('0');
-				}
-				hexString.append(hex);
-			}
-			return hexString.toString();
-		} catch (NoSuchAlgorithmException e) {
-			return Integer.toHexString(url.hashCode());
-		}
-	}
 
 	public static String headersToJson(Map<String, String> headers) {
 		JSONObject json = new JSONObject();

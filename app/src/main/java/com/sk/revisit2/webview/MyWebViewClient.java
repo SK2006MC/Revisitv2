@@ -2,26 +2,28 @@ package com.sk.revisit2.webview;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.view.View;
 
 import androidx.annotation.NonNull;
+
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.sk.revisit2.log.Log;
 import com.sk.revisit2.MyUtils;
+import com.sk.revisit2.log.Log;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 public class MyWebViewClient extends WebViewClient {
 
-	final MyUtils myUtils;
 	final String TAG = MyWebViewClient.class.getSimpleName();
+	final MyUtils myUtils;
 	LinearProgressIndicator progressBar;
 
 	public MyWebViewClient(@NonNull MyUtils myUtils) {
@@ -61,12 +63,12 @@ public class MyWebViewClient extends WebViewClient {
 		return new WebResourceResponse("text/html", "UTF-8", new ByteArrayInputStream("no off file".getBytes()));
 	}
 
-	WebResourceResponse loadFromLocal(File file) {
+	private WebResourceResponse loadFromLocal(File file) {
 		WebResourceResponse response;
 		String localFile = file.getAbsolutePath();
 		String mimeType = getMimeType(localFile);
 		String encoding = getEncoding(file);
-		//Map<String,String> headers = getHeaders(localFile);
+		Map<String, String> headers = getHeaders(localFile);
 		InputStream inputStream;
 		try {
 			inputStream = new FileInputStream(file);
@@ -75,14 +77,19 @@ public class MyWebViewClient extends WebViewClient {
 			Log.e(TAG, " ", e);
 		}
 		response = new WebResourceResponse(mimeType, encoding, inputStream);
-		//response.setResponseHeaders(headers);
+		response.setResponseHeaders(headers);
 		return response;
+	}
+
+	private Map<String, String> getHeaders(String localFile) {
+		myUtils.getHeaders(localFile);
+		return null;
 	}
 
 	String getMimeType(String file) {
 		String mimeType = myUtils.getMimeTypeFromMeta(file);
 		if (mimeType == null) {
-			//myUtils.createMeteMimeType()
+			//myUtils.createMeteMimeType();
 			mimeType = "application/oclet-stream";
 		}
 		return mimeType;
@@ -98,9 +105,10 @@ public class MyWebViewClient extends WebViewClient {
 
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView arg0, WebResourceRequest arg1) {
-		log1("shouldOverrideUrlLoading",arg1.getUrl().toString());
+		log1("shouldOverrideUrlLoading", arg1.getUrl().toString());
 		return super.shouldOverrideUrlLoading(arg0, arg1);
 	}
+
 	@Override
 	public void onPageFinished(WebView view, String url) {
 		super.onPageFinished(view, url);
@@ -122,10 +130,10 @@ public class MyWebViewClient extends WebViewClient {
 	@Override
 	public void onLoadResource(WebView arg0, String arg1) {
 		super.onLoadResource(arg0, arg1);
-		log1("onLoadResource",arg1);
+		log1("onLoadResource", arg1);
 	}
 
-	void log1(String funcName,String msg){
-		myUtils.Log(TAG,funcName+" -> "+msg);
+	void log1(String funcName, String msg) {
+		myUtils.Log(TAG, funcName + " -> " + msg);
 	}
 }

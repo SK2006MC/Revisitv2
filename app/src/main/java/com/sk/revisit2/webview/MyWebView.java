@@ -7,23 +7,20 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.sk.revisit2.MyUtils;
 import com.sk.revisit2.preferences.WebPreferenceManager;
 
 public class MyWebView extends WebView {
 
 	final Context context;
-	AttributeSet attributeSet;
-	int defStyleAttr;
-
 	public MyWebViewClient webViewClient;
 	public MyWebChromeClient webChromeClient;
 	public MyUtils myUtils;
-	
+	AttributeSet attributeSet;
+	int defStyleAttr;
 	private WebPreferenceManager preferenceManager;
-	private LinearProgressIndicator progressBar;
 
 	public MyWebView(Context context) {
 		super(context);
@@ -56,7 +53,6 @@ public class MyWebView extends WebView {
 	}
 
 	public void setProgressBar(LinearProgressIndicator progressBar) {
-		this.progressBar = progressBar;
 		webChromeClient.setProgressBar(progressBar);
 		webViewClient.setProgressBar(progressBar);
 	}
@@ -65,8 +61,7 @@ public class MyWebView extends WebView {
 	void init(Context context) {
 		preferenceManager = new WebPreferenceManager(context);
 		WebSettings webSettings = getSettings();
-		
-		// Apply basic settings that aren't configurable
+
 		webSettings.setAllowContentAccess(true);
 		webSettings.setAllowFileAccess(true);
 		webSettings.setAllowFileAccessFromFileURLs(true);
@@ -74,12 +69,8 @@ public class MyWebView extends WebView {
 		webSettings.setOffscreenPreRaster(true);
 		webSettings.setUseWideViewPort(true);
 
-		// Apply configurable settings from preferences
 		preferenceManager.applyToWebSettings(webSettings);
-
-		// Listen for preference changes
 		preferenceManager.registerOnSharedPreferenceChangeListener((prefs, key) -> {
-			// Reapply settings when preferences change
 			preferenceManager.applyToWebSettings(webSettings);
 		});
 	}
@@ -87,10 +78,9 @@ public class MyWebView extends WebView {
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
-		// Clean up preference listener
 		if (preferenceManager != null) {
 			preferenceManager.unregisterOnSharedPreferenceChangeListener(
-				(prefs, key) -> preferenceManager.applyToWebSettings(getSettings())
+					(prefs, key) -> preferenceManager.applyToWebSettings(getSettings())
 			);
 		}
 	}

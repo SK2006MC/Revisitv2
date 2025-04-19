@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 
-import com.sk.revisit2.log.LoggerHelper;
+import com.sk.revisit2.log.FileLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ResourceManager {
-	private final FileSystemManager fileManager;
-	private final LoggerHelper logger;
+public class ResourceUtils {
+	private final FileUtils fileManager;
+	private final FileLogger logger;
 
-	public ResourceManager(FileSystemManager fileManager, LoggerHelper logger) {
+	public ResourceUtils(FileUtils fileManager, FileLogger logger) {
 		this.fileManager = fileManager;
 		this.logger = logger;
 	}
@@ -59,9 +59,9 @@ public class ResourceManager {
 
 	public String buildLocalPath(Uri uri) {
 		String authority = uri.getAuthority() != null ? uri.getAuthority() : "no_authority";
-		String basePath =   authority + File.separator;
+		String basePath = authority + File.separator;
 		fileManager.prepareDirectory(new File(basePath));
-		return basePath + Utils.hash(uri.toString());
+		return basePath + EncodingUtils.hash(uri.toString());
 	}
 
 	public void saveMetadata(String basePath, String mimeType, String encoding,

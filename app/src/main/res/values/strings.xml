@@ -4,4 +4,6 @@
 	<string name="use_internet">Use Internet?</string>
 	<string name="keep_uptodate">Keep UptoDate?</string>
 	<string name="refresh">Refresh</string>
+	<string name="about">About</string>
+	<string name="settings">Settings</string>
 </resources>

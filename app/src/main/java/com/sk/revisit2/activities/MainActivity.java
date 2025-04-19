@@ -1,22 +1,21 @@
-package com.sk.revisit2;
+package com.sk.revisit2.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
-import com.google.android.material.navigation.NavigationView;
 
-import com.sk.revisit2.log.Log;
-import com.sk.revisit2.webview.MyWebView;
-import com.sk.revisit2.activities.PreferenceActivity;
+import com.google.android.material.navigation.NavigationView;
+import com.sk.revisit2.MyUtils;
+import com.sk.revisit2.R;
 import com.sk.revisit2.databinding.ActivityMainBinding;
 import com.sk.revisit2.databinding.MainNavBinding;
-import com.sk.revisit2.activities.AboutActivity;
+import com.sk.revisit2.log.Log;
+import com.sk.revisit2.webview.MyWebView;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +24,6 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
 
 	final String TAG = MainActivity.class.getSimpleName();
-	private ActivityMainBinding binding;
 	MyUtils myUtils;
 	ExecutorService executorService;
 	String rootPathString;
@@ -34,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 	MainNavBinding navBinding;
 	DrawerLayout drawerLayout;
 	NavigationView navigationView;
-
+	private ActivityMainBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +53,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void initUi() {
+		//binding views
 		navigationView = binding.navigationView;
 		drawerLayout = binding.dlm;
 		navBinding = MainNavBinding.bind(navigationView.getHeaderView(0));
-	    
+
+		//init nav menu
 		navigationView.setNavigationItemSelectedListener(item -> {
 			if (item.getItemId() == R.id.nav_settings) {
 				startMyActivity(PreferenceActivity.class);
@@ -68,8 +68,9 @@ public class MainActivity extends AppCompatActivity {
 				return true;
 			}
 			return false;
-    	});	
+		});
 
+		//init webview
 		webViewMain = binding.mainWebView;
 		webViewMain.setMyUtils(myUtils);
 		webViewMain.setProgressBar(binding.webProgressBar);
@@ -78,8 +79,8 @@ public class MainActivity extends AppCompatActivity {
 			try {
 				if (actionId == EditorInfo.IME_ACTION_DONE) {
 					webViewMain.loadUrl(navBinding.urlEditText.getText().toString());
-					executorService.execute(() -> runOnUiThread(() -> 
-						drawerLayout.closeDrawer(navigationView)));
+					executorService.execute(() -> runOnUiThread(() ->
+							drawerLayout.closeDrawer(navigationView)));
 				}
 			} catch (Exception e) {
 				alert(e.toString());
@@ -88,13 +89,11 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		});
 
-		navBinding.useInternet.setChecked(false);
 		navBinding.useInternet.setOnCheckedChangeListener((v, b) -> {
 			MyUtils.isNetWorkAvailable = b;
 			navBinding.shouldUpdate.setEnabled(b);
 		});
 
-		navBinding.shouldUpdate.setChecked(false);
 		navBinding.shouldUpdate.setOnCheckedChangeListener((v, b) -> MyUtils.shouldUpdate = b);
 
 		navBinding.urlEditText.setText("https://www.google.com");
@@ -103,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 		});
 	}
 
-	void initBackPress(){
+	void initBackPress() {
 		OnBackPressedCallback backPressedCallback = new OnBackPressedCallback(true) {
 			@Override
 			public void handleOnBackPressed() {
@@ -127,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			Log.saveLog(new File(LogFilePath));
 		} catch (Exception e) {
-			Log.e(TAG,e);
+			Log.e(TAG, e);
 			alert(e.toString());
 		}
 		myUtils.close();
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
 	void startMyActivity(Class<?> activityClass) {
 		Intent intent = new Intent(this, activityClass);
-		startActivity(intent);
 		drawerLayout.closeDrawer(navigationView);
+		startActivity(intent);
 	}
 }

@@ -1,7 +1,5 @@
 package com.sk.revisit2.utils;
 
-import android.net.Uri;
-
 import com.sk.revisit2.log.Log;
 
 import java.io.BufferedReader;
@@ -16,15 +14,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class FileSystemManager implements AutoCloseable {
-	private final String rootPath;
+public class FileUtils implements AutoCloseable {
+	private final String TAG = FileUtils.class.getSimpleName();
 	private final ExecutorService executorService;
-	private final String TAG = FileSystemManager.class.getSimpleName();
 
-	public FileSystemManager(String rootPath, ExecutorService executorService) {
-		this.rootPath = normalizePath(rootPath);
+	public FileUtils(String rootPath, ExecutorService executorService) {
+		rootPath = normalizePath(rootPath);
+		prepareDirectory(new File(rootPath));
 		this.executorService = executorService;
-		prepareDirectory(new File(this.rootPath));
 	}
 
 	private String normalizePath(String path) {
@@ -37,7 +34,6 @@ public class FileSystemManager implements AutoCloseable {
 				return;
 			}
 		}
-		dir.isDirectory();
 	}
 
 	public File prepareFile(String path) {
@@ -64,7 +60,7 @@ public class FileSystemManager implements AutoCloseable {
 					new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 				writer.write(content);
 			} catch (IOException e) {
-				// Error handling could be added here
+				Log.e(TAG, e);
 			}
 		});
 	}
@@ -92,7 +88,7 @@ public class FileSystemManager implements AutoCloseable {
 		if (file != null && file.exists()) {
 			executorService.execute(() -> {
 				if (!file.delete()) {
-					Log.e(TAG,"err deleting file");
+					Log.e(TAG, "err deleting file");
 				}
 			});
 		}
@@ -112,6 +108,37 @@ public class FileSystemManager implements AutoCloseable {
 		return dir.exists() && dir.isDirectory();
 	}
 
+	public String getString(File file, String encoding) {
+		if (file == null || !file.exists() || !file.isFile()) {
+			return null;
+		}
+		StringBuilder builder = new StringBuilder();
+		String effectiveEncoding = encoding;
+		if (effectiveEncoding == null || effectiveEncoding.isEmpty()) {
+			effectiveEncoding = StandardCharsets.UTF_8.name();
+			Log.d(TAG, ": Using default encoding UTF-8 for file: " + file.getPath());
+		}
+
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), effectiveEncoding))) {
+			char[] buffer = new char[1024];
+			int charsRead;
+			while ((charsRead = reader.read(buffer)) != -1) {
+				builder.append(buffer, 0, charsRead);
+			}
+			return builder.toString();
+		} catch (IOException e) {
+			Log.e(TAG, ": ERROR: Error reading string from file: " + file.getPath() + " - " + e.getMessage());
+			return null;
+		} catch (Exception e) {
+			Log.e(TAG, ": ERROR: Error processing file: " + file.getPath() + " - " + e.getMessage());
+			return null;
+		}
+	}
+
+	public String getString(File file) {
+		return getString(file, null);
+	}
+
 	@Override
 	public void close() {
 		executorService.shutdown();
@@ -123,9 +150,5 @@ public class FileSystemManager implements AutoCloseable {
 			executorService.shutdownNow();
 			Thread.currentThread().interrupt();
 		}
-	}
-
-	public String buildLocalPath(Uri uri) {
-		return "";
 	}
 }

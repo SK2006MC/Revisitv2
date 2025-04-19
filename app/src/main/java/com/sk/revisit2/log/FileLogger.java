@@ -4,13 +4,13 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.concurrent.ExecutorService;
 
-public class LoggerHelper {
+public class FileLogger {
 
-	final String TAG = LoggerHelper.class.getSimpleName();
-	BufferedWriter writer;
+	final String TAG = FileLogger.class.getSimpleName();
 	final ExecutorService executorService;
+	BufferedWriter writer;
 
-	public LoggerHelper(String filePath, ExecutorService executorService) {
+	public FileLogger(String filePath, ExecutorService executorService) {
 		this.executorService = executorService;
 		try {
 			writer = new BufferedWriter(new FileWriter(filePath, true));

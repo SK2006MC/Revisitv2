@@ -2,8 +2,6 @@ package com.sk.revisit2;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Base64;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -11,26 +9,20 @@ import android.webkit.WebResourceResponse;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.sk.revisit2.log.LoggerHelper;
+import com.sk.revisit2.log.FileLogger;
+import com.sk.revisit2.utils.EncodingUtils;
+import com.sk.revisit2.utils.FileUtils;
+import com.sk.revisit2.webview.WebResourceDownloader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -47,13 +39,13 @@ public class MyUtils {
 	private static final String META_HEADERS_SUFFIX = ".head";
 	private static final String META_ENCODING_SUFFIX = ".enc"; // Added for explicit encoding saving
 	public static boolean isNetWorkAvailable = false, shouldUpdate = false;
+	final int WRITE_BUFFER = 8 * 1024;
 	private final ExecutorService executorService;
-	private final LoggerHelper logger, urlLogger, reqLogger;
+	private final FileLogger logger, urlLogger, reqLogger;
 	private final String rootPath;
 	private final Context context;
-	final int WRITE_BUFFER = 8 * 1024;
-	private final Downloader downloader;
-	private final FileManager fileManager;
+	private final WebResourceDownloader webResourceDownloader;
+	private final FileUtils fileUtils;
 	private final MetadataManager metadataManager;
 	private final EncodingUtils encodingUtils;
 
@@ -65,23 +57,23 @@ public class MyUtils {
 		this.context = context;
 		this.rootPath = rootPath;
 		executorService = Executors.newFixedThreadPool(MAX_THREADS);
-		
+
 		// Initialize loggers first
-		logger = new LoggerHelper(rootPath + "log.txt", executorService);
-		urlLogger = new LoggerHelper(rootPath + "urls.txt", executorService);
-		reqLogger = new LoggerHelper(rootPath + "req.txt", executorService);
-		
+		logger = new FileLogger(rootPath + "log.txt", executorService);
+		urlLogger = new FileLogger(rootPath + "urls.txt", executorService);
+		reqLogger = new FileLogger(rootPath + "req.txt", executorService);
+
 		// Initialize utility classes
-		fileManager = new FileManager(logger, WRITE_BUFFER);
+		fileUtils = new FileUtils(rootPath, executorService);
 		encodingUtils = new EncodingUtils(logger);
-		metadataManager = new MetadataManager(logger, fileManager);
-		
-		// Initialize downloader
-		downloader = new Downloader(executorService, this, WRITE_BUFFER);
-		
+		metadataManager = new MetadataManager(logger, fileUtils);
+
+		// Initialize webResourceDownloader
+		webResourceDownloader = new WebResourceDownloader(executorService, this, WRITE_BUFFER);
+
 		// Ensure root directory exists
-		fileManager.prepareDirectory(new File(rootPath));
-		
+		fileUtils.prepareDirectory(new File(rootPath));
+
 		Log(TAG, "MyUtils initialized. Root path: " + rootPath);
 	}
 
@@ -187,7 +179,7 @@ public class MyUtils {
 	// Added Error logging using instance logger
 	public void LogError(String msg, Throwable e) {
 		logger.log(TAG + ": ERROR: " + msg + (e != null ? " - " + e.getMessage() : ""));
-		// Optionally log stack trace too, depending on LoggerHelper capability or verbosity needs
+		// Optionally log stack trace too, depending on FileLogger capability or verbosity needs
 		// if (e != null) logger.log(android.util.Log.getStackTraceString(e));
 	}
 
@@ -204,7 +196,7 @@ public class MyUtils {
 	}
 
 	public File prepareFile(String path) {
-		return fileManager.prepareFile(path);
+		return fileUtils.prepareFile(path);
 	}
 
 	public String buildLocalPath(Uri uri) {
@@ -218,7 +210,7 @@ public class MyUtils {
 		}
 		// Ensure the base directory exists when creating the path string
 		String basePath = rootPath + authority + File.separator;
-		fileManager.prepareDirectory(new File(basePath)); // Ensure base dir exists
+		fileUtils.prepareDirectory(new File(basePath)); // Ensure base dir exists
 		return basePath;
 	}
 
@@ -238,7 +230,7 @@ public class MyUtils {
 	}
 
 	public void download(WebResourceRequest request) {
-		downloader.download(request);
+		webResourceDownloader.download(request);
 	}
 
 	public void saveMimeType(String baseFilePath, String mimeType) {
@@ -247,7 +239,7 @@ public class MyUtils {
 			// Extract only the MIME type part
 			String actualMime = mimeType.split(";")[0].trim();
 			if (!actualMime.isEmpty()) {
-				fileManager.writeStringToFile(baseFilePath + META_MIME_SUFFIX, actualMime);
+				fileUtils.writeStringToFile(baseFilePath + META_MIME_SUFFIX, actualMime);
 			} else {
 				Log(TAG, "Extracted empty mime type from: " + mimeType);
 			}
@@ -257,7 +249,7 @@ public class MyUtils {
 			String guessedMime = guessMimeFromUrl(baseFilePath); // Use original URL if possible, fallback to filepath
 			if (guessedMime != null) {
 				Log(TAG, "Guessed MIME type: " + guessedMime + " for " + baseFilePath);
-				fileManager.writeStringToFile(baseFilePath + META_MIME_SUFFIX, guessedMime);
+				fileUtils.writeStringToFile(baseFilePath + META_MIME_SUFFIX, guessedMime);
 			}
 		}
 	}
@@ -266,7 +258,7 @@ public class MyUtils {
 
 	public void saveEncoding(String baseFilePath, String encoding) {
 		if (encoding != null && !encoding.isEmpty()) {
-			fileManager.writeStringToFile(baseFilePath + META_ENCODING_SUFFIX, encoding);
+			fileUtils.writeStringToFile(baseFilePath + META_ENCODING_SUFFIX, encoding);
 		}
 		// If no encoding header, we might rely on guessing later or default to UTF-8
 	}
@@ -275,14 +267,14 @@ public class MyUtils {
 		if (headersMap != null && !headersMap.isEmpty()) {
 			JSONObject jsonHeaders = responseHeadersToJson(headersMap);
 			if (jsonHeaders != null) {
-				fileManager.writeStringToFile(baseFilePath + META_HEADERS_SUFFIX, jsonHeaders.toString());
+				fileUtils.writeStringToFile(baseFilePath + META_HEADERS_SUFFIX, jsonHeaders.toString());
 			}
 		}
 	}
 
 	// Helper to write a string to a file
 	public void writeStringToFile(String filePath, String content) {
-		fileManager.writeStringToFile(filePath, content);
+		fileUtils.writeStringToFile(filePath, content);
 	}
 
 	public String getMimeTypeFromMeta(String baseFilePath) {
@@ -300,7 +292,7 @@ public class MyUtils {
 
 	// Helper to read the first line (or whole content) from a small file
 	public String readStringFromFile(String filePath) {
-		return fileManager.readStringFromFile(filePath);
+		return fileUtils.readStringFromFile(filePath);
 	}
 
 	// --- Header Conversion ---
@@ -311,12 +303,12 @@ public class MyUtils {
 	 * Uses the provided or guessed encoding.
 	 */
 	public String getString(File file, String encoding) {
-		return fileManager.getString(file, encoding);
+		return fileUtils.getString(file, encoding);
 	}
 
 	// Overload getString to use default encoding guessing
 	public String getString(File file) {
-		return fileManager.getString(file);
+		return fileUtils.getString(file);
 	}
 
 	public String guessEncodingFromFile(File file) {
@@ -363,7 +355,7 @@ public class MyUtils {
 
 	// Renamed original deleteFile for clarity
 	void deleteSingleFile(File file) {
-		fileManager.deleteFile(file);
+		fileUtils.deleteFile(file);
 	}
 
 	// Make the public deleteFile call the helper for consistency

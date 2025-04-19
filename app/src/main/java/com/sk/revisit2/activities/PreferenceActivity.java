@@ -1,6 +1,7 @@
 package com.sk.revisit2.activities;
 
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -13,14 +14,14 @@ public class PreferenceActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		getSupportFragmentManager()
 				.beginTransaction()
-				.replace(android.R.id.content,new PreferencesFragment())
+				.replace(android.R.id.content, new PreferencesFragment())
 				.commit();
 	}
 
-    public static class PreferencesFragment extends PreferenceFragmentCompat {
-        @Override
-        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.websettings, rootKey);
-        }
-    }
+	public static class PreferencesFragment extends PreferenceFragmentCompat {
+		@Override
+		public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+			setPreferencesFromResource(R.xml.websettings, rootKey);
+		}
+	}
 }
