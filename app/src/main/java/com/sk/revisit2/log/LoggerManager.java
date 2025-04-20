@@ -2,8 +2,6 @@ package com.sk.revisit2.log;
 
 import android.webkit.WebResourceRequest;
 
-import com.sk.revisit2.utils.Utils;
-
 import java.util.concurrent.ExecutorService;
 
 public class LoggerManager implements AutoCloseable {
@@ -26,7 +24,7 @@ public class LoggerManager implements AutoCloseable {
 	}
 
 	public void logRequest(WebResourceRequest req) {
-		reqLogger.log(req.getUrl().toString() + "\t|\t" + Utils.headersToJson(req.getRequestHeaders()));
+		//reqLogger.log(req.getUrl().toString() + "\t|\t" + Url.headersToJson(req.getRequestHeaders()));
 	}
 
 	@Override

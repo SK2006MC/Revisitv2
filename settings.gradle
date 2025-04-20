@@ -3,7 +3,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        mavenCentral() // Warning: this repository is going to shut down soon
     }
 }
 rootProject.name = "Revisitv2"

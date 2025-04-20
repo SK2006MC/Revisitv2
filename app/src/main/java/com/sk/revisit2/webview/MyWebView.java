@@ -70,9 +70,7 @@ public class MyWebView extends WebView {
 		webSettings.setUseWideViewPort(true);
 
 		preferenceManager.applyToWebSettings(webSettings);
-		preferenceManager.registerOnSharedPreferenceChangeListener((prefs, key) -> {
-			preferenceManager.applyToWebSettings(webSettings);
-		});
+		preferenceManager.registerOnSharedPreferenceChangeListener((prefs, key) -> preferenceManager.applyToWebSettings(webSettings));
 	}
 
 	@Override

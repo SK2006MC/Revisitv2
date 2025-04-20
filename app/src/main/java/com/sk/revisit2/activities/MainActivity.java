@@ -1,5 +1,6 @@
 package com.sk.revisit2.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.inputmethod.EditorInfo;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 		executorService = Executors.newSingleThreadExecutor();
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void initUi() {
 		//binding views
 		navigationView = binding.navigationView;
@@ -97,9 +99,7 @@ public class MainActivity extends AppCompatActivity {
 		navBinding.shouldUpdate.setOnCheckedChangeListener((v, b) -> MyUtils.shouldUpdate = b);
 
 		navBinding.urlEditText.setText("https://www.google.com");
-		navBinding.refreshButton.setOnClickListener(v -> {
-			webViewMain.loadUrl(navBinding.urlEditText.getText().toString());
-		});
+		navBinding.refreshButton.setOnClickListener(v -> webViewMain.loadUrl(navBinding.urlEditText.getText().toString()));
 	}
 
 	void initBackPress() {
@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 		};
-
 		getOnBackPressedDispatcher().addCallback(backPressedCallback);
 	}
 

@@ -2,7 +2,6 @@ package com.sk.revisit2.utils;
 
 import android.util.Base64;
 
-import com.sk.revisit2.log.FileLogger;
 import com.sk.revisit2.log.Log;
 
 import java.io.File;
@@ -15,11 +14,6 @@ import java.security.NoSuchAlgorithmException;
 
 public class EncodingUtils {
 	private static final String TAG = EncodingUtils.class.getSimpleName();
-	private final FileLogger logger;
-
-	public EncodingUtils(FileLogger logger) {
-		this.logger = logger;
-	}
 
 	public static String encodeToB64(String url) {
 		return Base64.encodeToString(url.getBytes(StandardCharsets.UTF_8), Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
@@ -41,7 +35,7 @@ public class EncodingUtils {
 			return hexString.toString();
 
 		} catch (NoSuchAlgorithmException e) {
-			Log.e(TAG,": ERROR: SHA-256 algorithm not available - " + e.getMessage());
+			Log.e(TAG, ": ERROR: SHA-256 algorithm not available - " + e.getMessage());
 			return encodeToB64(url);
 		}
 	}
@@ -52,14 +46,14 @@ public class EncodingUtils {
 			byte[] bom = new byte[3];
 			int bytesRead = fis.read(bom, 0, 3);
 			if (bytesRead == 3 && bom[0] == (byte) 0xEF && bom[1] == (byte) 0xBB && bom[2] == (byte) 0xBF) {
-				Log.d(TAG,": Detected UTF-8 BOM for file " + file.getAbsolutePath());
+				Log.d(TAG, ": Detected UTF-8 BOM for file " + file.getAbsolutePath());
 				return StandardCharsets.UTF_8.name();
 			}
 		} catch (IOException e) {
-			Log.e(TAG , ": ERROR: Error checking BOM for file " + file.getAbsolutePath() + " - " + e.getMessage());
+			Log.e(TAG, ": ERROR: Error checking BOM for file " + file.getAbsolutePath() + " - " + e.getMessage());
 		}
 
-		Log.d(TAG , ": Defaulting to UTF-8 encoding for file " + file.getAbsolutePath());
+		Log.d(TAG, ": Defaulting to UTF-8 encoding for file " + file.getAbsolutePath());
 		return StandardCharsets.UTF_8.name();
 	}
 } 

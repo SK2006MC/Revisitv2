@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.sk.revisit2.MyUtils;
 import com.sk.revisit2.log.Log;
+import com.sk.revisit2.managers.WebResourceManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -24,10 +25,12 @@ public class MyWebViewClient extends WebViewClient {
 
 	final String TAG = MyWebViewClient.class.getSimpleName();
 	final MyUtils myUtils;
+	WebResourceManager resourceManager;
 	LinearProgressIndicator progressBar;
 
 	public MyWebViewClient(@NonNull MyUtils myUtils) {
 		this.myUtils = myUtils;
+		this.resourceManager = new WebResourceManager(myUtils);
 	}
 
 	public void setProgressBar(LinearProgressIndicator progressBar) {
@@ -36,76 +39,11 @@ public class MyWebViewClient extends WebViewClient {
 
 	@Override
 	public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
-		Uri uri = request.getUrl();
-		if (!request.getMethod().equals("GET")) {
-			return null;
-		}
-
-		String localFilePath = myUtils.buildLocalPath(uri);
-		myUtils.logUrl(uri + " -> " + localFilePath);
-		File localFile = new File(localFilePath);
-
-		if (localFile.exists()) {
-			if (MyUtils.shouldUpdate) {
-				myUtils.download(request);
-				Log.i(TAG, "updating from local");
-			}
-			Log.i(TAG, "loading from local");
-			return loadFromLocal(localFile);
-		} else {
-			Log.i(TAG, "need to download");
-			if (MyUtils.isNetWorkAvailable) {
-				myUtils.download(request);
-				return loadFromLocal(localFile);
-			}
-			myUtils.logReq(request);
-		}
-		return new WebResourceResponse("text/html", "UTF-8", new ByteArrayInputStream("no off file".getBytes()));
-	}
-
-	private WebResourceResponse loadFromLocal(File file) {
-		WebResourceResponse response;
-		String localFile = file.getAbsolutePath();
-		String mimeType = getMimeType(localFile);
-		String encoding = getEncoding(file);
-		Map<String, String> headers = getHeaders(localFile);
-		InputStream inputStream;
-		try {
-			inputStream = new FileInputStream(file);
-		} catch (Exception e) {
-			inputStream = new ByteArrayInputStream("err".getBytes());
-			Log.e(TAG, " ", e);
-		}
-		response = new WebResourceResponse(mimeType, encoding, inputStream);
-		response.setResponseHeaders(headers);
-		return response;
-	}
-
-	private Map<String, String> getHeaders(String localFile) {
-		myUtils.getHeaders(localFile);
-		return null;
-	}
-
-	String getMimeType(String file) {
-		String mimeType = myUtils.getMimeTypeFromMeta(file);
-		if (mimeType == null) {
-			//myUtils.createMeteMimeType();
-			mimeType = "application/oclet-stream";
-		}
-		return mimeType;
-	}
-
-	String getEncoding(File file) {
-		String encoding = myUtils.guessEncodingFromFile(file);
-		if (encoding == null) {
-			encoding = "UTF-8";
-		}
-		return encoding;
+		return resourceManager.getResponse(webView,request);
 	}
 
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView arg0, WebResourceRequest arg1) {
-		log1("shouldOverrideUrlLoading", arg1.getUrl().toString());
 		return super.shouldOverrideUrlLoading(arg0, arg1);
 	}
 
@@ -130,10 +68,6 @@ public class MyWebViewClient extends WebViewClient {
 	@Override
 	public void onLoadResource(WebView arg0, String arg1) {
 		super.onLoadResource(arg0, arg1);
-		log1("onLoadResource", arg1);
 	}
 
-	void log1(String funcName, String msg) {
-		myUtils.Log(TAG, funcName + " -> " + msg);
-	}
 }
