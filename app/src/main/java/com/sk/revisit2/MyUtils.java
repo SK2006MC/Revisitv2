@@ -98,7 +98,7 @@ public class MyUtils {
 		return UrlMetaManager.getMimeTypeFromMeta(file);
 	}
 
-	public String getEncodingFromMeta(String file){
+	public String getEncodingFromMeta(String file) {
 		return UrlMetaManager.getEncodingFromMeta(file);
 	}
 

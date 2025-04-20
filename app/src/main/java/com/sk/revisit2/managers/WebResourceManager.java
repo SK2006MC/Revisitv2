@@ -1,7 +1,6 @@
 package com.sk.revisit2.managers;
 
 import android.net.Uri;
-import android.nfc.Tag;
 import android.webkit.URLUtil;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -26,27 +25,27 @@ public class WebResourceManager {
 	MyUtils myUtils;
 	LoggerManager loggerManager;
 
-	public WebResourceManager(MyUtils myUtils){
+	public WebResourceManager(MyUtils myUtils) {
 		this.myUtils = myUtils;
 		this.loggerManager = myUtils.getLoggerManager();
 	}
 
-	public WebResourceResponse getResponse(WebView webView, @NonNull WebResourceRequest request){
+	public WebResourceResponse getResponse(WebView webView, @NonNull WebResourceRequest request) {
 		Uri uri = request.getUrl();
 		String url = uri.toString();
 
-		if(!URLUtil.isNetworkUrl(url)){
-			Log.i(TAG,"Non network url: "+url);
+		if (!URLUtil.isNetworkUrl(url)) {
+			Log.i(TAG, "Non network url: " + url);
 			return null;
 		}
 
-		if(request.isRedirect()){
-			Log.i(TAG,"Redirected: "+url);
+		if (request.isRedirect()) {
+			Log.i(TAG, "Redirected: " + url);
 			return null;
 		}
 
 		if (!request.getMethod().equals("GET")) {
-			Log.i(TAG,"Not GET Method: "+request.getMethod()+':'+url);
+			Log.i(TAG, "Not GET Method: " + request.getMethod() + ':' + url);
 			return null;
 		}
 
@@ -66,7 +65,7 @@ public class WebResourceManager {
 			if (MyUtils.isNetWorkAvailable) {
 				myUtils.download(request);
 				return loadFromLocal(localFile);
-			}else {
+			} else {
 				loggerManager.logRequest(request);
 				return new WebResourceResponse("text/html", "UTF-8", new ByteArrayInputStream("no off file".getBytes()));
 			}
@@ -85,7 +84,7 @@ public class WebResourceManager {
 			inputStream = new FileInputStream(file);
 		} catch (Exception e) {
 			inputStream = new ByteArrayInputStream(e.toString().getBytes());
-			Log.e(TAG,e);
+			Log.e(TAG, e);
 		}
 		response = new WebResourceResponse(mimeType, encoding, inputStream);
 		response.setResponseHeaders(headers);

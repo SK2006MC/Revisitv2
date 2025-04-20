@@ -19,12 +19,15 @@
 
 	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/useInternet"
+		android:checked="false"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="@string/use_internet" />
 
 	<androidx.appcompat.widget.SwitchCompat
 		android:id="@+id/shouldUpdate"
+		android:checked="false"
+		android:enabled="false"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:text="@string/keep_uptodate" />

@@ -39,8 +39,8 @@ public class UrlMetaManager {
 		}
 	}
 
-	private static void Log(String msg){
-		Log.i(TAG,msg);
+	private static void Log(String msg) {
+		Log.i(TAG, msg);
 	}
 
 	public static void saveEncoding(String baseFilePath, String encoding) {

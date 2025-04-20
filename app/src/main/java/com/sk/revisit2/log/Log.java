@@ -9,33 +9,32 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Log {
-	
-	static String E="E",I="I",D="D";
-	
+
 	static final List<String[]> logs = new ArrayList<>();
+	static String E = "E", I = "I", D = "D";
 
 	public static void e(String tag, String msg, Exception e) {
-		logs.add(new String[]{E,tag, msg, e.toString()});
+		logs.add(new String[]{E, tag, msg, e.toString()});
 	}
 
 	public static void e(String tag, String msg) {
-		logs.add(new String[]{E,tag, msg});
+		logs.add(new String[]{E, tag, msg});
 	}
 
 	public static void e(String tag, Exception e) {
-		logs.add(new String[]{E,tag, e.toString()});
+		logs.add(new String[]{E, tag, e.toString()});
 	}
 
 	public static void i(String tag, String msg) {
-		logs.add(new String[]{I,tag, msg});
+		logs.add(new String[]{I, tag, msg});
 	}
 
 	public static void d(String tag, String msg) {
-		logs.add(new String[]{D,tag, msg});
+		logs.add(new String[]{D, tag, msg});
 	}
 
 	public static void saveLog(File logFile) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter(logFile,true));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
 		for (String[] log : logs) {
 			writer.write(Arrays.toString(log));
 			writer.newLine();

@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
 		navBinding.shouldUpdate.setOnCheckedChangeListener((v, b) -> MyUtils.shouldUpdate = b);
 
+		MyUtils.isNetWorkAvailable = false;
+		MyUtils.shouldUpdate = false;
+
 		navBinding.urlEditText.setText("https://www.google.com");
 		navBinding.refreshButton.setOnClickListener(v -> webViewMain.loadUrl(navBinding.urlEditText.getText().toString()));
 	}

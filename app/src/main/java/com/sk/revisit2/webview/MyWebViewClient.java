@@ -1,7 +1,6 @@
 package com.sk.revisit2.webview;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -12,14 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.sk.revisit2.MyUtils;
-import com.sk.revisit2.log.Log;
 import com.sk.revisit2.managers.WebResourceManager;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Map;
 
 public class MyWebViewClient extends WebViewClient {
 
@@ -39,7 +31,7 @@ public class MyWebViewClient extends WebViewClient {
 
 	@Override
 	public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
-		return resourceManager.getResponse(webView,request);
+		return resourceManager.getResponse(webView, request);
 	}
 
 	@Override

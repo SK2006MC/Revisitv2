@@ -64,7 +64,7 @@ public class FileUtils {
 				content.append(line);
 			}
 		} catch (IOException e) {
-			Log.e(TAG,e);
+			Log.e(TAG, e);
 			return null;
 		}
 		return content.toString();
@@ -91,6 +91,7 @@ public class FileUtils {
 		File dir = new File(path);
 		return dir.exists() && dir.isDirectory();
 	}
+
 	public static String getFileExtension(String filename) {
 		if (filename == null) {
 			return "";
