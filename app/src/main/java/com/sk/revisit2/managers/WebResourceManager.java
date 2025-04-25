@@ -41,7 +41,7 @@ public class WebResourceManager {
 
 		if (request.isRedirect()) {
 			Log.i(TAG, "Redirected: " + url);
-			return null;
+			//return null;
 		}
 
 		if (!request.getMethod().equals("GET")) {
@@ -63,6 +63,7 @@ public class WebResourceManager {
 		} else {
 			Log.i(TAG, "need to download");
 			if (MyUtils.isNetWorkAvailable) {
+				Log.i(TAG,"Downloading: "+url);
 				myUtils.download(request);
 				return loadFromLocal(localFile);
 			} else {
@@ -77,7 +78,7 @@ public class WebResourceManager {
 		WebResourceResponse response;
 		String localFile = file.getAbsolutePath();
 		String mimeType = getMimeType(localFile);
-		String encoding = getEncoding(file);
+		String encoding = getEncoding(localFile);
 		Map<String, String> headers = getHeaders(localFile);
 		InputStream inputStream;
 		try {
@@ -105,8 +106,8 @@ public class WebResourceManager {
 		return mimeType;
 	}
 
-	String getEncoding(File file) {
-		String encoding = myUtils.guessEncodingFromFile(file);
+	String getEncoding(String file) {
+		String encoding = myUtils.getEncodingFromMeta(file);
 		if (encoding == null) {
 			encoding = "UTF-8";
 		}

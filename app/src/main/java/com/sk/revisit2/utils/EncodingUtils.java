@@ -41,19 +41,18 @@ public class EncodingUtils {
 	}
 
 	public static String guessEncodingFromFile(File file) {
-
 		try (InputStream fis = new FileInputStream(file)) {
 			byte[] bom = new byte[3];
 			int bytesRead = fis.read(bom, 0, 3);
 			if (bytesRead == 3 && bom[0] == (byte) 0xEF && bom[1] == (byte) 0xBB && bom[2] == (byte) 0xBF) {
-				Log.d(TAG, ": Detected UTF-8 BOM for file " + file.getAbsolutePath());
+//				Log.d(TAG, ": Detected UTF-8 BOM for file " + file.getAbsolutePath());
 				return StandardCharsets.UTF_8.name();
 			}
 		} catch (IOException e) {
-			Log.e(TAG, ": ERROR: Error checking BOM for file " + file.getAbsolutePath() + " - " + e.getMessage());
+//			Log.e(TAG, ": ERROR: Error checking BOM for file " + file.getAbsolutePath() + " - " + e.getMessage());
 		}
 
-		Log.d(TAG, ": Defaulting to UTF-8 encoding for file " + file.getAbsolutePath());
+//		Log.d(TAG, ": Defaulting to UTF-8 encoding for file " + file.getAbsolutePath());
 		return StandardCharsets.UTF_8.name();
 	}
 } 

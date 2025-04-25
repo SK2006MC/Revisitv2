@@ -60,6 +60,23 @@ public class MyUtils {
 		return basePath;
 	}
 
+	public String buildLocalPath3(Uri uri){
+		String url = uri.toString();
+		String query = uri.getQuery();
+		String auth = uri.getAuthority();
+		String localPath;
+		uri.normalizeScheme();
+		if (query != null){
+			String lastPathSegment = uri.getLastPathSegment();
+			lastPathSegment += EncodingUtils.encodeToB64(query);
+			localPath = rootPath + auth + lastPathSegment;
+			return localPath;
+		}else {
+			localPath = rootPath + auth + uri.getScheme();
+			return localPath;
+		}
+	}
+
 	@NonNull
 	private String buildLocalPath1(Uri uri) {
 		return buildBasePath(uri) + EncodingUtils.encodeToB64(uri.toString());

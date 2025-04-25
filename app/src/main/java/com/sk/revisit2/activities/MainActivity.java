@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
 			} else if (item.getItemId() == R.id.nav_about) {
 				startMyActivity(AboutActivity.class);
 				return true;
+			} else if(item.getItemId() == R.id.nav_test){
+				startMyActivity(TestActivity.class);
+				return true;
 			}
 			return false;
 		});

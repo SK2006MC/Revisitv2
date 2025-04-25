@@ -14,15 +14,15 @@ public class MyWebChromeClient extends WebChromeClient {
 		super.onProgressChanged(arg0, arg1);
 		if (progressBar != null) {
 			progressBar.setProgress(arg1);
+			if (arg1 < 100) {
+				progressBar.setVisibility(android.view.View.VISIBLE);
+			} else {
+				progressBar.setVisibility(android.view.View.GONE);
+			}
 		}
 	}
 
 	public void setProgressBar(LinearProgressIndicator progressBar) {
 		this.progressBar = progressBar;
-	}
-
-	@Override
-	public void getVisitedHistory(ValueCallback<String[]> arg0) {
-		super.getVisitedHistory(arg0);
 	}
 }

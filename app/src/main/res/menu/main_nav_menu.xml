@@ -6,6 +6,10 @@
 		android:title="@string/settings" />
 
 	<item
+		android:id="@+id/nav_test"
+		android:title="@string/test"/>
+
+	<item
 		android:id="@+id/nav_about"
 		android:title="@string/about" />
 
