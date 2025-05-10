@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sk.revisit2.converters.JsonAndMap;
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 import com.sk.revisit2.utils.FileUtils;
 
 import org.json.JSONObject;

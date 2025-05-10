@@ -2,7 +2,7 @@ package com.sk.revisit2.converters;
 
 import androidx.annotation.Nullable;
 
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;

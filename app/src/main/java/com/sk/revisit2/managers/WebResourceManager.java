@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sk.revisit2.MyUtils;
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 import com.sk.revisit2.log.LoggerManager;
 
 import java.io.ByteArrayInputStream;
@@ -85,7 +85,7 @@ public class WebResourceManager {
 			inputStream = new FileInputStream(file);
 		} catch (Exception e) {
 			inputStream = new ByteArrayInputStream(e.toString().getBytes());
-			Log.e(TAG, e);
+			Log.e(TAG, e.toString(),e);
 		}
 		response = new WebResourceResponse(mimeType, encoding, inputStream);
 		response.setResponseHeaders(headers);

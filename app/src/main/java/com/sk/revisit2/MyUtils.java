@@ -6,7 +6,7 @@ import android.webkit.WebResourceRequest;
 
 import androidx.annotation.NonNull;
 
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 import com.sk.revisit2.log.LoggerManager;
 import com.sk.revisit2.managers.UrlMetaManager;
 import com.sk.revisit2.utils.EncodingUtils;

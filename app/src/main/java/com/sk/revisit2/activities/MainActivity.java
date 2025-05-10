@@ -15,7 +15,7 @@ import com.sk.revisit2.MyUtils;
 import com.sk.revisit2.R;
 import com.sk.revisit2.databinding.ActivityMainBinding;
 import com.sk.revisit2.databinding.MainNavBinding;
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 import com.sk.revisit2.webview.MyWebView;
 
 import java.io.File;
@@ -24,15 +24,15 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-	final String TAG = MainActivity.class.getSimpleName();
-	MyUtils myUtils;
-	ExecutorService executorService;
-	String rootPathString;
-	String LogFilePath;
-	MyWebView webViewMain;
-	MainNavBinding navBinding;
-	DrawerLayout drawerLayout;
-	NavigationView navigationView;
+	public final String TAG = MainActivity.class.getSimpleName();
+	private MyUtils myUtils;
+	private ExecutorService executorService;
+	private String rootPathString;
+	private String LogFilePath;
+	private MyWebView webViewMain;
+	private MainNavBinding navBinding;
+	private DrawerLayout drawerLayout;
+	private NavigationView navigationView;
 	private ActivityMainBinding binding;
 
 	@Override
@@ -70,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
 				return true;
 			} else if(item.getItemId() == R.id.nav_test){
 				startMyActivity(TestActivity.class);
+				return true;
+			} else if(item.getItemId() == R.id.nav_log){
+				startMyActivity(LogActivity.class);
 				return true;
 			}
 			return false;
@@ -128,12 +131,6 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	protected void onDestroy() {
 		webViewMain.destroy();
-		try {
-			Log.saveLog(new File(LogFilePath));
-		} catch (Exception e) {
-			Log.e(TAG, e);
-			alert(e.toString());
-		}
 		myUtils.close();
 		super.onDestroy();
 	}

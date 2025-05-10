@@ -35,6 +35,7 @@
 		</activity>
 		<activity android:name=".activities.PreferenceActivity" />
 		<activity android:name=".activities.AboutActivity" />
+		<activity android:name=".activities.LogActivity" />
 	</application>
 
 </manifest>

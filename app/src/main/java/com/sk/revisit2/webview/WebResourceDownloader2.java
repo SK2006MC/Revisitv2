@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.webkit.WebResourceRequest;
 
 import com.sk.revisit2.MyUtils;
-import com.sk.revisit2.log.Log;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
