@@ -1,10 +1,16 @@
 <resources>
-	<string name="app_name">Revisitv2</string>
-	<string name="enter_a_url">Enter a url</string>
-	<string name="use_internet">Use Internet?</string>
-	<string name="keep_uptodate">Keep UptoDate?</string>
-	<string name="refresh">Refresh</string>
-	<string name="about">About</string>
-	<string name="settings">Settings</string>
-	<string name="test">Test</string>
+    <string name="app_name">Revisitv2</string>
+    <string name="enter_a_url">Enter a url</string>
+    <string name="use_internet">Use Internet?</string>
+    <string name="keep_uptodate">Keep UptoDate?</string>
+    <string name="refresh">Refresh</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="test">Test</string>
+    <string name="update">Update</string>
+    <string name="refresh_page">Refresh page</string>
+    <string name="enter_url">Enter URL</string>
+    <string name="load_url">Load url</string>
+    <string name="url_monitor">URL Monitor</string>
+    <string name="clear_monitoring_data">Clear Monitoring Data</string>
 </resources>

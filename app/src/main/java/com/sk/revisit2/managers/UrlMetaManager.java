@@ -1,12 +1,12 @@
 package com.sk.revisit2.managers;
 
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.sk.revisit2.converters.JsonAndMap;
-import android.util.Log;
 import com.sk.revisit2.utils.FileUtils;
 
 import org.json.JSONObject;

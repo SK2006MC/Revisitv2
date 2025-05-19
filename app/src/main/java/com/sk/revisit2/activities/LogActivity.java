@@ -3,7 +3,6 @@ package com.sk.revisit2.activities;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.sk.revisit2.R;
 import com.sk.revisit2.databinding.ActivityLogBinding;
@@ -32,6 +30,7 @@ import java.util.List;
 public class LogActivity extends AppCompatActivity {
 
 	private static final String TAG = "LogActivity";
+	private static final int MAX_LOGS = 1000;
 	private ActivityLogBinding binding;
 	private RecyclerView logcatView;
 	private List<LogItem> logcatItems;
@@ -39,8 +38,6 @@ public class LogActivity extends AppCompatActivity {
 	private Process logcatProcess;
 	private Handler mainHandler;
 	private String currentPriority = "V";
-	private static final int MAX_LOGS = 1000;
-	private SwipeRefreshLayout swipeRefreshLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,14 +45,11 @@ public class LogActivity extends AppCompatActivity {
 		binding = ActivityLogBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 		mainHandler = new Handler(Looper.getMainLooper());
-		initUi();
-		initLogCatObserver();
-	}
 
-	private void initUi() {
 		logcatView = binding.logRecyclerView;
 
 		String[] priorities = {"Verbose", "Debug", "Info", "Warning", "Error"};
+		String[] priorityLetters = {"V", "D", "I", "W", "E"};
 		ArrayAdapter<String> priorityAdapter = new ArrayAdapter<>(
 				this,
 				android.R.layout.simple_dropdown_item_1line,
@@ -67,8 +61,9 @@ public class LogActivity extends AppCompatActivity {
 		binding.prioritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-				currentPriority = priorities[i];
-				Toast.makeText(LogActivity.this, "selected: " + currentPriority, Toast.LENGTH_SHORT).show();
+				currentPriority = priorityLetters[i];
+				clearLogs();
+				Toast.makeText(LogActivity.this, "Filtering logs: " + priorities[i], Toast.LENGTH_SHORT).show();
 			}
 
 			@Override
@@ -79,17 +74,9 @@ public class LogActivity extends AppCompatActivity {
 
 		binding.clearButton.setOnClickListener(v -> clearLogs());
 
-		swipeRefreshLayout = binding.swipeRefreshLayout;
-		swipeRefreshLayout.setOnRefreshListener(() -> {
-			clearLogs();
-			swipeRefreshLayout.setRefreshing(false);
-		});
-
 		logcatView.setItemAnimator(null);
 		logcatView.setHasFixedSize(true);
-	}
 
-	private void initLogCatObserver() {
 		logcatItems = new ArrayList<>();
 		adapter = new LogItemAdapter(logcatItems);
 		logcatView.setLayoutManager(new LinearLayoutManager(this));
@@ -101,7 +88,8 @@ public class LogActivity extends AppCompatActivity {
 
 				ProcessBuilder processBuilder = new ProcessBuilder(
 						"logcat",
-						"-v", "threadtime"
+						"-v", "threadtime",
+						"*:" + currentPriority
 				);
 
 				processBuilder.redirectErrorStream(true);
@@ -118,29 +106,34 @@ public class LogActivity extends AppCompatActivity {
 				while ((line = reader.readLine()) != null) {
 					if (line.isEmpty()) continue;
 
-                    /*
-                    logcat -v threadtime
-                    mm-dd hh-mm-ss.mmm pid tid priority tag: msg
-                     */
-					String[] parts = line.split(" ", 6);
-
-					LogItem item = new LogItem(
-							parts[0] + parts[1], // timestamp
-							parts[2], // pid
-							parts[3], // tid
-							parts[4], // priority
-							parts[5], // tag
-							parts[6]  // message
-					);
-
-					mainHandler.post(() -> {
-						if (logcatItems.size() >= MAX_LOGS) {
-							logcatItems.remove(0);
-							adapter.notifyItemRemoved(0);
+					try {
+						String[] parts = line.split("\\s+", 7);
+						
+						if (parts.length < 7) {
+							Log.w(TAG, "Skipping malformed log line: " + line);
+							continue;
 						}
-						logcatItems.add(item);
-						adapter.notifyItemInserted(MAX_LOGS-1);
-					});
+
+						LogItem item = new LogItem(
+								parts[0] + " " + parts[1], // timestamp
+								parts[2], // pid
+								parts[3], // tid
+								parts[4], // priority
+								parts[5], // tag
+								parts[6]  // message
+						);
+
+						mainHandler.post(() -> {
+							if (logcatItems.size() >= MAX_LOGS) {
+								logcatItems.remove(0);
+								adapter.notifyItemRemoved(0);
+							}
+							logcatItems.add(item);
+							adapter.notifyItemInserted(logcatItems.size() - 1);
+						});
+					} catch (Exception e) {
+						Log.e(TAG, "Error parsing log line: " + line, e);
+					}
 				}
 			} catch (IOException e) {
 				Log.e(TAG, "Error reading logcat: " + e);

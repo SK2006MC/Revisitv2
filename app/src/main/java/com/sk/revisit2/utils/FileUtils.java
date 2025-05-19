@@ -1,7 +1,6 @@
 package com.sk.revisit2.utils;
 
 import android.util.Log;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -32,8 +31,10 @@ public class FileUtils {
 			}
 
 			File parent = file.getParentFile();
-			if (parent != null && !parent.exists() && !parent.mkdirs()) {
-				return null;
+			if (parent != null && !parent.exists()){
+				if(!parent.mkdirs()){
+					return null;
+				}
 			}
 
 			return file.createNewFile() ? file : null;
@@ -47,7 +48,7 @@ public class FileUtils {
 				new OutputStreamWriter(new FileOutputStream(filePath), StandardCharsets.UTF_8))) {
 			writer.write(content);
 		} catch (IOException e) {
-			Log.e(TAG, e.toString(),e);
+			Log.e(TAG, e.toString(), e);
 		}
 	}
 
@@ -65,7 +66,7 @@ public class FileUtils {
 				content.append(line);
 			}
 		} catch (IOException e) {
-			Log.e(TAG, e.toString(),e);
+			Log.e(TAG, e.toString(), e);
 			return null;
 		}
 		return content.toString();

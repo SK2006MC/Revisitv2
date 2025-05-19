@@ -1,11 +1,10 @@
 package com.sk.revisit2.webview;
 
 import android.net.Uri;
-import android.webkit.WebResourceRequest;
 import android.util.Log;
+import android.webkit.WebResourceRequest;
 
 import com.sk.revisit2.MyUtils;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;

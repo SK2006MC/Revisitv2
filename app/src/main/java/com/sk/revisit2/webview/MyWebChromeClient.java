@@ -1,6 +1,5 @@
 package com.sk.revisit2.webview;
 
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 

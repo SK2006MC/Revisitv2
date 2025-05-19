@@ -18,61 +18,63 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.Executors;
+
 public class WebResourceManager {
 
 	String TAG = this.getClass().getSimpleName();
 	MyUtils myUtils;
-	WebLogger loggerManager;
+	WebLogger webLogger;
 
 	public WebResourceManager(MyUtils myUtils) {
 		this.myUtils = myUtils;
-		this.loggerManager = new WebLogger(myUtils.getRootPath(), Executors.newSingleThreadExecutor());
+		this.webLogger = new WebLogger(myUtils.getRootPath(), Executors.newSingleThreadExecutor());
 	}
 
 	public WebResourceResponse getResponse(WebView webView, @NonNull WebResourceRequest request) {
 		Uri uri = request.getUrl();
 		String url = uri.toString();
 
+
 		if (!URLUtil.isNetworkUrl(url)) {
-			loggerManager.Log( "Non network url: " + url);
+			webLogger.Log("Non network url: " + url);
 			return null;
 		}
 
 		if (request.isRedirect()) {
-			loggerManager.Log( "Redirect: " + url);
+			webLogger.Log("Redirect: " + url);
 			//return null;
 		}
 
 		if (!request.getMethod().equals("GET")) {
-			loggerManager.Log( "Not GET Method: " + request.getMethod() + ':' + url);
+			webLogger.Log("Not GET Method: " + request.getMethod() + ':' + url);
 			return null;
 		}
 
 		String localFilePath = myUtils.buildLocalPath(uri);
-		loggerManager.logUrl(uri + " -> " + localFilePath);
+		webLogger.logUrl(uri + " -> " + localFilePath);
 		File localFile = new File(localFilePath);
 
 		if (localFile.exists()) {
 			if (MyUtils.shouldUpdate && MyUtils.isNetWorkAvailable) {
 				myUtils.download(request);
-				loggerManager.Log( "updating local resource: "+url);
+				webLogger.Log("updating local resource: " + url);
 			}
-			loggerManager.Log( "loading from local: "+url);
+			webLogger.Log("loading from local: " + url);
 			return loadFromLocal(localFile);
 		} else {
-			loggerManager.Log( "need to download: "+url);
+			webLogger.Log("need to download: " + url);
 			if (MyUtils.isNetWorkAvailable) {
-				loggerManager.Log("Downloading: "+url);
+				webLogger.Log("Downloading: " + url);
 				download(request);
 				return loadFromLocal(localFile);
 			} else {
-				loggerManager.logRequest(String.valueOf(request));
+				webLogger.logRequest(url);
 				return new WebResourceResponse("text/html", "UTF-8", new ByteArrayInputStream("no off file".getBytes()));
 			}
 		}
 	}
 
-	private void download(WebResourceRequest request){
+	private void download(WebResourceRequest request) {
 		myUtils.download(request);
 	}
 
@@ -82,18 +84,18 @@ public class WebResourceManager {
 		String localFile = file.getAbsolutePath();
 		String mimeType = getMimeType(localFile);
 		String encoding = getEncoding(localFile);
-		//Map<String, String> headers = getHeaders(localFile);
+		Map<String, String> headers = getHeaders(localFile);
 		InputStream inputStream;
 		try {
 			inputStream = new FileInputStream(file);
 		} catch (Exception e) {
 			inputStream = new ByteArrayInputStream(e.toString().getBytes());
-			loggerManager.Log(e.toString());
+			webLogger.Log(e.toString());
 		}
 		response = new WebResourceResponse(mimeType, encoding, inputStream);
-		//response.setResponseHeaders(headers);
+		response.setResponseHeaders(headers);
 		//response.setStatusCodeAndReasonPhrase(200,"OK");
-		loggerManager.logLocalPath(localFile);
+		webLogger.logLocalPath(localFile);
 		return response;
 	}
 

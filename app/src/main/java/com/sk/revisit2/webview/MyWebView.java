@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.sk.revisit2.MyUtils;
+import com.sk.revisit2.components.UrlMonitor;
 import com.sk.revisit2.preferences.WebPreferenceManager;
 
 public class MyWebView extends WebView {
@@ -50,6 +51,12 @@ public class MyWebView extends WebView {
 
 		setWebChromeClient(webChromeClient);
 		setWebViewClient(webViewClient);
+	}
+
+	public void setUrlMonitor(UrlMonitor urlMonitor) {
+		if (webViewClient != null) {
+			webViewClient.setUrlMonitor(urlMonitor);
+		}
 	}
 
 	public void setProgressBar(LinearProgressIndicator progressBar) {

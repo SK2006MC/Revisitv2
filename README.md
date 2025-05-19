@@ -3,11 +3,17 @@
 ### Activities
 
 #### MainActivity.java
-The primary activity that implements a navigation drawer pattern with WebView integration. Features include:
-- URL input field with Google as default homepage
-- Network controls (internet access toggle and update settings)
-- Navigation menu with links to Settings, About, Test, and Log activities
-- Custom back button handling for drawer and WebView navigation
+The primary activity that implements dual navigation drawer pattern with WebView integration. Features include:
+- Left navigation drawer with:
+  - URL input field with Google as default homepage
+  - Network controls (internet access toggle and update settings)
+  - Navigation menu with links to Settings, About, Test, and Log activities
+- Right navigation drawer with:
+  - Real-time URL monitoring system
+  - Resource request tracking
+  - Loading status indicators
+  - File size information
+- Custom back button handling for both drawers and WebView navigation
 - Progress bar integration for web page loading
 - Uses ViewBinding for UI components
 
@@ -40,6 +46,7 @@ Custom WebView implementation that extends Android's WebView with:
 - Preference management for web settings
 - File access and universal access settings
 - Wide viewport and offscreen pre-raster support
+- URL monitoring integration
 
 #### MyWebViewClient.java
 Custom WebViewClient implementation that:
@@ -47,6 +54,8 @@ Custom WebViewClient implementation that:
 - Integrates with WebResourceManager for resource handling
 - Supports progress bar integration
 - Handles resource caching and offline access
+- Tracks and reports URL loading status
+- Monitors resource sizes and loading progress
 
 #### MyWebChromeClient.java
 Custom WebChromeClient that provides:
@@ -59,6 +68,49 @@ Handles downloading and caching of web resources for offline access.
 
 #### WebResourceDownloader2.java
 Enhanced version of WebResourceDownloader with additional features for resource management.
+
+### Models
+
+#### UrlItem.java
+Data class for tracking web resource requests with:
+- URL and HTTP method tracking
+- Resource size monitoring
+- Loading status (IGNORED, LOADING, LOADED_LOCAL, LOADED_REMOTE, ERROR)
+- Download progress tracking
+- Getters and setters for all properties
+
+### Adapters
+
+#### UrlAdapter.java
+RecyclerView adapter for displaying URL monitoring information:
+- Manages list of UrlItems
+- Adds new URLs at the top of the list
+- Updates URL status and progress in real-time
+- Formats file sizes in human-readable format
+- Handles progress bar visibility based on loading status
+
+### Layouts
+
+#### item_url.xml
+Layout for individual URL monitoring items:
+- URL display with ellipsis for long URLs
+- HTTP method display
+- File size display
+- Progress bar for loading status
+- ConstraintLayout-based design for efficient layout
+
+#### nav_header_main.xml
+Left navigation drawer header layout with:
+- URL input field
+- Network control switches
+- Refresh button
+
+#### nav_header_url_monitor.xml
+Right navigation drawer header layout with:
+- Title section
+- URL monitoring RecyclerView
+- Swipe-to-refresh functionality
+- Clear monitoring data button
 
 ### Utilities
 

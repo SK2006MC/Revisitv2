@@ -1,9 +1,10 @@
 package com.sk.revisit2.log;
 
+import android.util.Log;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.concurrent.ExecutorService;
-import android.util.Log;
 
 
 public class FileLogger {
@@ -17,7 +18,7 @@ public class FileLogger {
 		try {
 			writer = new BufferedWriter(new FileWriter(filePath, true));
 		} catch (Exception e) {
-			Log.e(TAG, e.toString(),e);
+			Log.e(TAG, e.toString(), e);
 		}
 	}
 
@@ -31,7 +32,7 @@ public class FileLogger {
 			writer.newLine();
 			writer.flush();
 		} catch (Exception e) {
-			Log.e(TAG, e.toString(),e);
+			Log.e(TAG, e.toString(), e);
 		}
 	}
 
@@ -39,7 +40,7 @@ public class FileLogger {
 		try {
 			writer.close();
 		} catch (Exception e) {
-			Log.e(TAG, e.toString(),e);
+			Log.e(TAG, e.toString(), e);
 		}
 	}
 }

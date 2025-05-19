@@ -1,56 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<PreferenceCategory android:title="WebView Settings">
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="javascript_enabled"
-			android:summary="Enable JavaScript execution"
-			android:title="JavaScript" />
+    <PreferenceCategory android:title="WebView Settings">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="javascript_enabled"
+            android:summary="Enable JavaScript execution"
+            android:title="JavaScript" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="dom_storage_enabled"
-			android:summary="Enable DOM storage API"
-			android:title="DOM Storage" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="dom_storage_enabled"
+            android:summary="Enable DOM storage API"
+            android:title="DOM Storage" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="database_enabled"
-			android:summary="Enable database storage API"
-			android:title="Database" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="database_enabled"
+            android:summary="Enable database storage API"
+            android:title="Database" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="support_zoom"
-			android:summary="Enable zooming in web pages"
-			android:title="Zoom Support" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="support_zoom"
+            android:summary="Enable zooming in web pages"
+            android:title="Zoom Support" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="false"
-			android:key="safe_browsing"
-			android:summary="Enable safe browsing mode"
-			android:title="Safe Browsing" />
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="safe_browsing"
+            android:summary="Enable safe browsing mode"
+            android:title="Safe Browsing" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="multiple_windows"
-			android:summary="Support multiple windows"
-			android:title="Multiple Windows" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="multiple_windows"
+            android:summary="Support multiple windows"
+            android:title="Multiple Windows" />
 
-		<SwitchPreferenceCompat
-			android:defaultValue="true"
-			android:key="media_playback_gesture"
-			android:summary="Require user gesture for media playback"
-			android:title="Media Playback Gesture" />
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="media_playback_gesture"
+            android:summary="Require user gesture for media playback"
+            android:title="Media Playback Gesture" />
 
-		<ListPreference
-			android:defaultValue="0"
-			android:entries="@array/mixed_content_modes"
-			android:entryValues="@array/mixed_content_mode_values"
-			android:key="mixed_content_mode"
-			android:summary="How to handle mixed content"
-			android:title="Mixed Content Mode" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/mixed_content_modes"
+            android:entryValues="@array/mixed_content_mode_values"
+            android:key="mixed_content_mode"
+            android:summary="How to handle mixed content"
+            android:title="Mixed Content Mode" />
 
-	</PreferenceCategory>
+    </PreferenceCategory>
 </PreferenceScreen>

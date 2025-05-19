@@ -2,11 +2,11 @@ package com.sk.revisit2;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 
 import androidx.annotation.NonNull;
 
-import android.util.Log;
 import com.sk.revisit2.managers.UrlMetaManager;
 import com.sk.revisit2.utils.EncodingUtils;
 import com.sk.revisit2.utils.FileUtils;
@@ -49,14 +49,13 @@ public class MyUtils {
 		return buildLocalPath2(uri);
 	}
 
-	// public String buildLocalPath4(Uri uri){
-	// 	String url = uri.getPath();
-	// 	//check if the url is dynamic
-	// 	assert url != null;
-	// 	if(url.contains("=")){
-	// 		return buildLocalPath2(uri);
-	// 	}
-	// }
+	public String buildLocalPath3(Uri uri) {
+		String url = uri.toString();
+		url = url.replaceAll("[=?:;]", "/");
+		url = url.replaceAll("//+", "/");
+		url = url.trim();
+		return url;
+	}
 
 	@NonNull
 	private String buildBasePath(@NonNull Uri uri) {

@@ -1,10 +1,10 @@
 package com.sk.revisit2.webview;
 
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 
 import com.sk.revisit2.MyUtils;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,7 +78,7 @@ public class WebResourceDownloader2 {
 				ResponseBody body = response.body();
 				if (body != null) {
 					try (InputStream inputStream = body.byteStream();
-					     FileOutputStream outputStream = new FileOutputStream(file)) {
+						 FileOutputStream outputStream = new FileOutputStream(file)) {
 
 						byte[] buffer = new byte[WRITE_BUFFER];
 						int bytesRead;

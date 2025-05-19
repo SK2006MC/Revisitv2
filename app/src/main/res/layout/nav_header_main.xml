@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/urlEditText"
+            android:layout_width="0dp"
+            android:layout_height="40sp"
+            android:layout_weight="1"
+            android:hint="@string/enter_url"
+            android:imeOptions="actionDone"
+            android:inputType="textUri" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/load_url"
+            android:src="@drawable/baseline_done_24" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/useInternet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/use_internet" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/shouldUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/update" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/refreshButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/refresh_page"
+        android:src="@drawable/baseline_refresh_24"
+        android:tooltipText="@string/refresh_page" />
+
+</LinearLayout> 

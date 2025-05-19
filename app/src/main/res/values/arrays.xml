@@ -1,77 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string-array name="file_extensions">
-		<item>.txt</item>
-		<item>.md</item>
-		<item>.json</item>
-		<item>.xml</item>
-		<item>.html</item>
-		<item>.css</item>
-		<item>.js</item>
-		<item>.py</item>
-		<item>.java</item>
-		<item>.kt</item>
-	</string-array>
+    <string-array name="file_extensions">
+        <item>.txt</item>
+        <item>.md</item>
+        <item>.json</item>
+        <item>.xml</item>
+        <item>.html</item>
+        <item>.css</item>
+        <item>.js</item>
+        <item>.py</item>
+        <item>.java</item>
+        <item>.kt</item>
+    </string-array>
 
-	<string-array name="font_sizes">
-		<item>12</item>
-		<item>14</item>
-		<item>16</item>
-		<item>18</item>
-		<item>20</item>
-		<item>22</item>
-		<item>24</item>
-	</string-array>
+    <string-array name="font_sizes">
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+        <item>20</item>
+        <item>22</item>
+        <item>24</item>
+    </string-array>
 
-	<string-array name="theme_modes">
-		<item>Light</item>
-		<item>Dark</item>
-		<item>System</item>
-	</string-array>
+    <string-array name="theme_modes">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System</item>
+    </string-array>
 
-	<string-array name="theme_modes_values">
-		<item>light</item>
-		<item>dark</item>
-		<item>system</item>
-	</string-array>
+    <string-array name="theme_modes_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>system</item>
+    </string-array>
 
-	<string-array name="line_wrap_modes">
-		<item>None</item>
-		<item>Word</item>
-		<item>Character</item>
-	</string-array>
+    <string-array name="line_wrap_modes">
+        <item>None</item>
+        <item>Word</item>
+        <item>Character</item>
+    </string-array>
 
-	<string-array name="line_wrap_modes_values">
-		<item>none</item>
-		<item>word</item>
-		<item>character</item>
-	</string-array>
+    <string-array name="line_wrap_modes_values">
+        <item>none</item>
+        <item>word</item>
+        <item>character</item>
+    </string-array>
 
-	<string-array name="window_positions">
-		<item>Center</item>
-		<item>Top</item>
-		<item>Bottom</item>
-		<item>Left</item>
-		<item>Right</item>
-	</string-array>
+    <string-array name="window_positions">
+        <item>Center</item>
+        <item>Top</item>
+        <item>Bottom</item>
+        <item>Left</item>
+        <item>Right</item>
+    </string-array>
 
-	<string-array name="window_positions_values">
-		<item>center</item>
-		<item>top</item>
-		<item>bottom</item>
-		<item>left</item>
-		<item>right</item>
-	</string-array>
+    <string-array name="window_positions_values">
+        <item>center</item>
+        <item>top</item>
+        <item>bottom</item>
+        <item>left</item>
+        <item>right</item>
+    </string-array>
 
-	<string-array name="mixed_content_modes">
-		<item>Always Allow</item>
-		<item>Never Allow</item>
-		<item>Compatibility Mode</item>
-	</string-array>
+    <string-array name="mixed_content_modes">
+        <item>Always Allow</item>
+        <item>Never Allow</item>
+        <item>Compatibility Mode</item>
+    </string-array>
 
-	<string-array name="mixed_content_mode_values">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
+    <string-array name="mixed_content_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources> 
