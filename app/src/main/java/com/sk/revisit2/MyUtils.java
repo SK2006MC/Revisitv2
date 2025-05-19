@@ -7,7 +7,6 @@ import android.webkit.WebResourceRequest;
 import androidx.annotation.NonNull;
 
 import android.util.Log;
-import com.sk.revisit2.log.LoggerManager;
 import com.sk.revisit2.managers.UrlMetaManager;
 import com.sk.revisit2.utils.EncodingUtils;
 import com.sk.revisit2.utils.FileUtils;
@@ -31,14 +30,12 @@ public class MyUtils {
 	private final String rootPath;
 	private final Context context;
 	private final WebResourceDownloader2 webResourceDownloader;
-	private final LoggerManager loggerManager;
 
 	public MyUtils(Context context, String rootPath) {
 		rootPath = PathUtils.normalizePathE(rootPath);
 		this.context = context;
 		this.rootPath = rootPath;
 		this.executorService = Executors.newFixedThreadPool(MAX_THREADS);
-		this.loggerManager = new LoggerManager(rootPath, executorService);
 		this.webResourceDownloader = new WebResourceDownloader2(executorService, this, WRITE_BUFFER);
 		FileUtils.prepareDirectory(new File(rootPath));
 		Log("MyUtils initialized. Root path: " + rootPath);
@@ -52,29 +49,21 @@ public class MyUtils {
 		return buildLocalPath2(uri);
 	}
 
+	// public String buildLocalPath4(Uri uri){
+	// 	String url = uri.getPath();
+	// 	//check if the url is dynamic
+	// 	assert url != null;
+	// 	if(url.contains("=")){
+	// 		return buildLocalPath2(uri);
+	// 	}
+	// }
+
 	@NonNull
 	private String buildBasePath(@NonNull Uri uri) {
 		String authority = uri.getAuthority();
 		String basePath = rootPath + authority + File.separator;
 		FileUtils.prepareDirectory(new File(basePath));
 		return basePath;
-	}
-
-	public String buildLocalPath3(Uri uri){
-		String url = uri.toString();
-		String query = uri.getQuery();
-		String auth = uri.getAuthority();
-		String localPath;
-		uri.normalizeScheme();
-		if (query != null){
-			String lastPathSegment = uri.getLastPathSegment();
-			lastPathSegment += EncodingUtils.encodeToB64(query);
-			localPath = rootPath + auth + lastPathSegment;
-			return localPath;
-		}else {
-			localPath = rootPath + auth + uri.getScheme();
-			return localPath;
-		}
 	}
 
 	@NonNull
@@ -136,11 +125,6 @@ public class MyUtils {
 			Log("Error waiting for executor termination: " + e.getMessage());
 		}
 		Log("Executor service shut down.");
-		loggerManager.close();
-	}
-
-	public LoggerManager getLoggerManager() {
-		return loggerManager;
 	}
 
 	public String getRootPath() {
