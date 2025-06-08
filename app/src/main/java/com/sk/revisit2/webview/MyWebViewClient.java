@@ -39,9 +39,6 @@ public class MyWebViewClient extends WebViewClient {
 	public WebResourceResponse shouldInterceptRequest(WebView webView, WebResourceRequest request) {
 		if (urlMonitor != null) {
 			urlMonitor.addUrlToMonitor(request.getUrl().toString(), request.getMethod());
-			Log.d(TAG,"url added");
-		}else{
-			Log.d(TAG,"urlMonitor is null");
 		}
 
 		WebResourceResponse response = resourceManager.getResponse(webView, request);
@@ -60,7 +57,6 @@ public class MyWebViewClient extends WebViewClient {
 			}catch(Exception e){
 				Log.e(TAG,e.toString());
 			}
-			
 		}
 		return response;
 	}

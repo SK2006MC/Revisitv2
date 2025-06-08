@@ -1,5 +1,11 @@
 # Revisit2 Android App
 
+## Workflow
+- opens the app
+- in the left nav view enters the url in the url bar
+- webview.load(that url)
+- shouldIntercepRequest the url request in MyWebViewClient.java
+
 ### Activities
 
 #### MainActivity.java
@@ -67,7 +73,24 @@ Custom WebChromeClient that provides:
 Handles downloading and caching of web resources for offline access.
 
 #### WebResourceDownloader2.java
-Enhanced version of WebResourceDownloader with additional features for resource management.
+Enhanced resource downloader implementation with features:
+- Asynchronous resource downloading using ExecutorService
+- Configurable timeout settings (default 15 seconds)
+- Efficient buffer-based file writing
+- Comprehensive error handling and logging
+- Automatic cleanup of partial downloads
+- Response metadata management (MIME types, encoding, headers)
+- Null safety checks and validation
+- Resource update control through MyUtils.shouldUpdate flag
+
+Key features:
+- Concurrent download support
+- Configurable write buffer size
+- Proper resource cleanup on failure
+- Detailed error logging
+- Response metadata preservation
+- Header management
+- MIME type and encoding tracking
 
 ### Models
 
@@ -124,3 +147,16 @@ Core utility class that provides:
 - Logging functionality
 - Root path management for offline storage
 - URL encoding and hashing utilities
+- Resource update control through shouldUpdate flag
+
+---
+
+## Requirements
+
+- Android API level 21 or higher
+- Internet permission for online functionality
+- Storage permission for caching
+
+## License
+
+This project is licensed under the GPL-v3 License. See the [LICENSE](LICENSE) file for details.

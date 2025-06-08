@@ -49,12 +49,14 @@ public class MyUtils {
 		return buildLocalPath2(uri);
 	}
 
-	public String buildLocalPath3(Uri uri) {
-		String url = uri.toString();
-		url = url.replaceAll("[=?:;]", "/");
-		url = url.replaceAll("//+", "/");
-		url = url.trim();
-		return url;
+	public void buildLocalPath3(Uri uri){
+		/*
+
+		uri = http://google.com -> http/google.com/index.html
+		kind of like mirror
+		uri = https://google.com/style.css -> https/google.com/style.css
+		uri = https://google.com/script.js?alskdj = https/google.com/script.js
+		*/
 	}
 
 	@NonNull
